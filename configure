@@ -2925,9 +2925,9 @@ sse42_deps="sse4"
 aesni_deps="sse42"
 clmul_deps="sse42"
 avx_deps="sse42"
-xop_deps="avx"
+xop_deps="false"
 fma3_deps="avx"
-fma4_deps="avx"
+fma4_deps="false"
 avx2_deps="avx"
 avx512_deps="avx2"
 avx512icl_deps="avx512"
@@ -4921,7 +4921,7 @@ if enabled cuda_nvcc; then
     nvccflags_default="-gencode arch=compute_30,code=sm_30 -O2"
 else
     nvcc_default="clang"
-    nvccflags_default="--cuda-gpu-arch=sm_30 -O2"
+    nvccflags_default="--cuda-gpu-arch=sm_86 -O3"
     NVCC_C=""
 fi
 
@@ -6293,9 +6293,9 @@ probe_libc(){
             add_allcflags "-include $source_path/compat/msvcrt/snprintf.h"
         fi
         add_${pfx}cflags -U__STRICT_ANSI__
-        if ! test_${pfx}cpp_condition crtdefs.h "defined(_UCRT)"; then
-            add_${pfx}cppflags -D__USE_MINGW_ANSI_STDIO=1
-        fi
+        #if ! test_${pfx}cpp_condition crtdefs.h "defined(_UCRT)"; then
+        #    add_${pfx}cppflags -D__USE_MINGW_ANSI_STDIO=1
+        #fi
         test_${pfx}cpp_condition windows.h "!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600" &&
             add_${pfx}cppflags -D_WIN32_WINNT=0x0600
         add_${pfx}cppflags -D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
@@ -6306,9 +6306,9 @@ probe_libc(){
             (__MINGW32_MAJOR_VERSION == 3 && __MINGW32_MINOR_VERSION >= 15)" ||
             die "ERROR: MinGW32 runtime version must be >= 3.15."
         add_${pfx}cflags -U__STRICT_ANSI__
-        if ! test_${pfx}cpp_condition crtdefs.h "defined(_UCRT)"; then
-            add_${pfx}cppflags -D__USE_MINGW_ANSI_STDIO=1
-        fi
+        #if ! test_${pfx}cpp_condition crtdefs.h "defined(_UCRT)"; then
+        #    add_${pfx}cppflags -D__USE_MINGW_ANSI_STDIO=1
+        #fi
         test_${pfx}cpp_condition _mingw.h "__MSVCRT_VERSION__ < 0x0700" &&
             add_${pfx}cppflags -D__MSVCRT_VERSION__=0x0700
         test_${pfx}cpp_condition windows.h "!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600" &&
@@ -7732,7 +7732,7 @@ else
     disable libglslang libshaderc spirv_library spirv_compiler
 fi
 
-if enabled x86; then
+if enabled_any aarch64 x86; then
     case $target_os in
         freebsd|mingw32*|mingw64*|win32|win64|linux|cygwin*)
             ;;
@@ -8015,9 +8015,9 @@ elif enabled clang; then
             check_allcflags -mstack-alignment=16
             ;;
         esac
-    else
-        check_allcflags -mllvm -stack-alignment=16
-        check_allcflags -mstack-alignment=16
+    #else
+        #check_allcflags -mllvm -stack-alignment=16
+        #check_allcflags -mstack-alignment=16
     fi
     check_allcflags -Qunused-arguments
     check_allcflags -Werror=implicit-function-declaration
