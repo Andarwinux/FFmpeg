@@ -78,6 +78,7 @@ static int get_cpu_flags(void)
     return 0;
 }
 
+/*
 void av_force_cpu_flags(int arg){
     if (ARCH_X86 &&
            (arg & ( AV_CPU_FLAG_3DNOW    |
@@ -115,6 +116,7 @@ int av_get_cpu_flags(void)
     }
     return flags;
 }
+*/
 
 int av_parse_cpu_caps(unsigned *flags, const char *s)
 {
