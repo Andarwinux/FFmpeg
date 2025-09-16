@@ -490,11 +490,11 @@ av_cold void ff_sws_init_swscale_x86(SwsInternal *c)
 
     c->use_mmx_vfilter = 0;
 
-    if (X86_MMXEXT(cpu_flags)) {
+    if (1) {
         if (!is16BPS(dst_format) && !isNBPS(dst_format) && !isSemiPlanarYUV(dst_format)
             && dst_format != AV_PIX_FMT_GRAYF32BE && dst_format != AV_PIX_FMT_GRAYF32LE
             && !(c->opts.flags & SWS_BITEXACT)) {
-            if (c->opts.flags & SWS_ACCURATE_RND) {
+            if (0) {
 #if HAVE_MMXEXT_INLINE
                 if (!(c->opts.flags & SWS_FULL_CHR_H_INT)) {
                     switch (c->opts.dst_format) {
