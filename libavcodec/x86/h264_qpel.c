@@ -400,7 +400,7 @@ av_cold void ff_h264qpel_init_x86(H264QpelContext *c, int bit_depth)
         }
     }
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (0) {
         if (!high_bit_depth) {
             H264_QPEL_FUNCS(0, 1, sse2);
             H264_QPEL_FUNCS(0, 2, sse2);
