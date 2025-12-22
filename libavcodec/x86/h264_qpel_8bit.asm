@@ -31,25 +31,6 @@ cextern pb_0
 
 SECTION .text
 
-; void ff_avg_pixels4_mmxext(uint8_t *block, const uint8_t *pixels,
-;                            ptrdiff_t line_size)
-INIT_MMX mmxext
-cglobal avg_pixels4, 3,4
-    lea          r3, [r2*3]
-    movh         m0, [r1]
-    movh         m1, [r1+r2]
-    movh         m2, [r1+r2*2]
-    movh         m3, [r1+r3]
-    pavgb        m0, [r0]
-    pavgb        m1, [r0+r2]
-    pavgb        m2, [r0+r2*2]
-    pavgb        m3, [r0+r3]
-    movh       [r0], m0
-    movh    [r0+r2], m1
-    movh  [r0+r2*2], m2
-    movh    [r0+r3], m3
-    RET
-
 %macro op_avgh 3
     movh   %3, %2
     pavgb  %1, %3
@@ -91,10 +72,6 @@ cglobal %1_pixels4x4_l2, 4,4
     RET
 %endmacro
 
-INIT_MMX mmxext
-PIXELS4_L2 put
-PIXELS4_L2 avg
-
 %macro QPEL4_H_LOWPASS_OP 1
 cglobal %1_h264_qpel4_h_lowpass, 4,5 ; dst, src, dstStride, srcStride
     pxor          m7, m7
@@ -131,10 +108,6 @@ cglobal %1_h264_qpel4_h_lowpass, 4,5 ; dst, src, dstStride, srcStride
     jg         .loop
     RET
 %endmacro
-
-INIT_MMX mmxext
-QPEL4_H_LOWPASS_OP put
-QPEL4_H_LOWPASS_OP avg
 
 %macro QPEL8_H_LOWPASS_OP_XMM 1
 cglobal %1_h264_qpel8_h_lowpass, 4,5,8 ; dst, src, dstStride, srcStride
@@ -217,11 +190,6 @@ cglobal %1_h264_qpel4_h_lowpass_l2, 5,6 ; dst, src, src2, dstStride, srcStride
     jg         .loop
     RET
 %endmacro
-
-INIT_MMX mmxext
-QPEL4_H_LOWPASS_L2_OP put
-QPEL4_H_LOWPASS_L2_OP avg
-
 
 %macro QPEL8_H_LOWPASS_L2_OP 1
 cglobal %1_h264_qpel8_h_lowpass_l2, 5,6,6 ; dst, src, src2, dstStride, srcStride
@@ -438,12 +406,6 @@ cglobal %1_h264_qpel4_v_lowpass, 4,4 ; dst, src, dstStride, srcStride
     RET
 %endmacro
 
-INIT_MMX mmxext
-QPEL4_V_LOWPASS_OP put
-QPEL4_V_LOWPASS_OP avg
-
-
-
 %macro QPEL8OR16_V_LOWPASS_OP 1
 cglobal %1_h264_qpel8or16_v_lowpass, 5,5,8 ; dst, src, dstStride, srcStride, h
     sub           r1, r3
@@ -514,36 +476,6 @@ QPEL8OR16_V_LOWPASS_OP avg
     SWAP            0, 1, 2, 3, 4, 5
 %endmacro
 
-INIT_MMX mmxext
-cglobal put_h264_qpel4_hv_lowpass_v, 3,5 ; src, tmp, srcStride
-    mov          r4d, 3
-    mov           r3, r0
-    pxor          m7, m7
-.loop:
-    movh          m0, [r0]
-    movh          m1, [r0+r2]
-    lea           r0, [r0+2*r2]
-    movh          m2, [r0]
-    movh          m3, [r0+r2]
-    lea           r0, [r0+2*r2]
-    movh          m4, [r0]
-    add           r0, r2
-    punpcklbw     m0, m7
-    punpcklbw     m1, m7
-    punpcklbw     m2, m7
-    punpcklbw     m3, m7
-    punpcklbw     m4, m7
-    FILT_HV       0*24
-    FILT_HV       1*24
-    FILT_HV       2*24
-    FILT_HV       3*24, last
-    add           r3, 4
-    add           r1, 8
-    mov           r0, r3
-    dec          r4d
-    jnz        .loop
-    RET
-
 %macro QPEL4_HV1_LOWPASS_OP 1
 cglobal %1_h264_qpel4_hv_lowpass_h, 3,4 ; tmp, dst, dstStride
     mov          r3d, 4
@@ -569,10 +501,6 @@ cglobal %1_h264_qpel4_hv_lowpass_h, 3,4 ; tmp, dst, dstStride
     jnz        .loop
     RET
 %endmacro
-
-INIT_MMX mmxext
-QPEL4_HV1_LOWPASS_OP put
-QPEL4_HV1_LOWPASS_OP avg
 
 INIT_XMM sse2
 cglobal put_h264_qpel8or16_hv1_lowpass_op, 4,4,8 ; src, tmp, srcStride, size
@@ -777,10 +705,6 @@ cglobal %1_pixels4_l2_shift5,4,4 ; dst, src16, src8, dstStride
     op_%1h        m1, [r0+r3], m5
     RET
 %endmacro
-
-INIT_MMX mmxext
-PIXELS4_L2_SHIFT5 put
-PIXELS4_L2_SHIFT5 avg
 
 %macro PIXELS8_L2_SHIFT5 1
 cglobal %1_pixels8_l2_shift5, 5, 5, 3 ; dst, src16, src8, dstStride

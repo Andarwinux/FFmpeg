@@ -26,27 +26,6 @@
 SECTION .text
 
 ;-------------------------------------------------------------------------------
-; int ff_pixelutils_sad_8x8_mmxext(const uint8_t *src1, ptrdiff_t stride1,
-;                                  const uint8_t *src2, ptrdiff_t stride2);
-;-------------------------------------------------------------------------------
-INIT_MMX mmxext
-cglobal pixelutils_sad_8x8, 4,4,0, src1, stride1, src2, stride2
-    pxor        m2, m2
-%rep 4
-    mova        m0, [src1q]
-    mova        m1, [src1q + stride1q]
-    psadbw      m0, [src2q]
-    psadbw      m1, [src2q + stride2q]
-    paddw       m2, m0
-    paddw       m2, m1
-    lea         src1q, [src1q + 2*stride1q]
-    lea         src2q, [src2q + 2*stride2q]
-%endrep
-    movd        eax, m2
-    emms
-    RET
-
-;-------------------------------------------------------------------------------
 ; int ff_pixelutils_sad_16x16_sse2(const uint8_t *src1, ptrdiff_t stride1,
 ;                                  const uint8_t *src2, ptrdiff_t stride2);
 ;-------------------------------------------------------------------------------

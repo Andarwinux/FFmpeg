@@ -124,8 +124,6 @@ cglobal yuv2yuvX, 7, 7, 8, filter, filterSize, src, dest, dstW, dither, offset
     RET
 %endmacro
 
-INIT_MMX mmxext
-YUV2YUVX_FUNC
 INIT_XMM sse3
 YUV2YUVX_FUNC
 %if HAVE_AVX2_EXTERNAL

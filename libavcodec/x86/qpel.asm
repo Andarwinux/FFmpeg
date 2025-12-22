@@ -79,10 +79,6 @@ cglobal %1_pixels%2x%2_l2, 5,6,2
     RET
 %endmacro
 
-INIT_MMX mmxext
-PIXELS_L2 put, 8, 9
-PIXELS_L2 avg, 8
-
 INIT_XMM sse2
 PIXELS_L2 put, 16, 17
 PIXELS_L2 avg, 16
@@ -132,7 +128,3 @@ cglobal %1_pixels16x16_l2, 5,6
     jne       .loop
     RET
 %endmacro
-
-INIT_MMX mmxext
-PIXELS16_L2 put
-PIXELS16_L2 avg

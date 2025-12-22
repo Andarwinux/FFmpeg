@@ -105,8 +105,6 @@ cglobal h264_weight_%1, 6, 6, %2
     RET
 %endmacro
 
-INIT_MMX mmxext
-WEIGHT_FUNC_HALF_MM 4, 0
 INIT_XMM sse2
 WEIGHT_FUNC_HALF_MM 8, 8
 
@@ -226,8 +224,6 @@ cglobal h264_biweight_%1, 7, 8, %2
     RET
 %endmacro
 
-INIT_MMX mmxext
-BIWEIGHT_FUNC_HALF_MM 4, 0
 INIT_XMM sse2
 BIWEIGHT_FUNC_HALF_MM 8, 8
 

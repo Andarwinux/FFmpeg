@@ -97,14 +97,10 @@ SECTION .text
 
 %macro MC 1
 %define OP_MOV mova
-INIT_MMX mmxext
-%1 put, 4
 INIT_XMM sse2
 %1 put, 8
 
 %define OP_MOV AVG_MOV
-INIT_MMX mmxext
-%1 avg, 4
 INIT_XMM sse2
 %1 avg, 8
 %endmacro
@@ -181,11 +177,6 @@ stub_%1_h264_qpel%3_%2_10 %+ SUFFIX:
 %endmacro
 
 %macro MC00 1
-INIT_MMX mmxext
-cglobal_mc %1, mc00, 4, 3,4,0
-    lea           r3, [r2*3]
-    COPY4
-    ret
 
 INIT_XMM sse2
 cglobal %1_h264_qpel8_mc00_10, 3,4
@@ -225,16 +216,12 @@ MC00 avg
 ;-----------------------------------------------------------------------------
 %macro MC_CACHE 1
 %define OP_MOV mova
-INIT_MMX mmxext
-%1 put, 4
 INIT_XMM ssse3, cache64
 %1 put, 8
 INIT_XMM sse2
 %1 put, 8
 
 %define OP_MOV AVG_MOV
-INIT_MMX mmxext
-%1 avg, 4
 INIT_XMM ssse3, cache64
 %1 avg, 8
 INIT_XMM sse2
@@ -391,15 +378,6 @@ v_filt%9_%10_10:
     ret
 %endmacro
 
-INIT_MMX mmxext
-RESET_MM_PERMUTATION
-%assign i 0
-%rep 4
-V_FILT m0, m1, m2, m3, m4, m5, m6, m7, 4, i
-SWAP 0,1,2,3,4,5
-%assign i i+1
-%endrep
-
 INIT_XMM sse2
 RESET_MM_PERMUTATION
 %assign i 0
@@ -494,16 +472,6 @@ h_filt%1_%2_10:
 %endif
     ret
 %endmacro
-
-INIT_MMX mmxext
-RESET_MM_PERMUTATION
-%assign i 0
-%rep 3
-H_FILT_AVG 4, i
-SWAP 0,1,2,3,4,5
-%assign i i+1
-%endrep
-H_FILT_AVG 4, i, 0
 
 INIT_XMM sse2
 RESET_MM_PERMUTATION
@@ -650,8 +618,6 @@ put_hv%1_10:
     ret
 %endmacro
 
-INIT_MMX mmxext
-HV 4
 INIT_XMM sse2
 HV 8
 
@@ -714,8 +680,6 @@ h%1_loop_op:
     ret
 %endmacro
 
-INIT_MMX mmxext
-H_LOOP 4
 INIT_XMM sse2
 H_LOOP 8
 
@@ -843,8 +807,6 @@ put_h%1_10:
     ret
 %endmacro
 
-INIT_MMX mmxext
-H_NRD 4
 INIT_XMM sse2
 H_NRD 8
 

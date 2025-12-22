@@ -195,19 +195,6 @@ IDCT_ADD16_10
     mova [%1+%3  ], m4
 %endmacro
 
-INIT_MMX mmxext
-cglobal h264_idct_dc_add_10,3,3
-    movsxdifnidn r2, r2d
-    movd      m0, [r1]
-    mov dword [r1], 0
-    paddd     m0, [pd_32]
-    psrad     m0, 6
-    lea       r1, [r2*3]
-    pshufw    m0, m0, 0
-    mova      m6, [pw_pixel_max]
-    IDCT_DC_ADD_OP_10 r0, r2, r1
-    RET
-
 ;-----------------------------------------------------------------------------
 ; void ff_h264_idct8_dc_add_10(pixel *dst, int16_t *block, int stride)
 ;-----------------------------------------------------------------------------

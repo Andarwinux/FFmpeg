@@ -816,19 +816,6 @@ cglobal put_vp8_pixels8, 5, 5+2*ARCH_X86_64, 2, dst, dststride, src, srcstride, 
     jg .nextrow
     RET
 
-INIT_XMM sse
-cglobal put_vp8_pixels16, 5, 5, 2, dst, dststride, src, srcstride, height
-.nextrow:
-    movups xmm0, [srcq+srcstrideq*0]
-    movups xmm1, [srcq+srcstrideq*1]
-    lea    srcq, [srcq+srcstrideq*2]
-    movaps [dstq+dststrideq*0], xmm0
-    movaps [dstq+dststrideq*1], xmm1
-    lea    dstq, [dstq+dststrideq*2]
-    sub heightd, 2
-    jg .nextrow
-    RET
-
 ;-----------------------------------------------------------------------------
 ; void ff_vp8_idct_dc_add_<opt>(uint8_t *dst, int16_t block[16], ptrdiff_t stride);
 ;-----------------------------------------------------------------------------
@@ -934,48 +921,6 @@ cglobal vp8_idct_dc_add4y, 3, 3, 6, dst, block, stride
     RET
 
 ;-----------------------------------------------------------------------------
-; void ff_vp8_idct_dc_add4uv_<opt>(uint8_t *dst, int16_t block[4][16], ptrdiff_t stride);
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmx
-cglobal vp8_idct_dc_add4uv, 3, 3, 0, dst, block, stride
-    ; load data
-    movd      m0, [blockq+32*0] ; A
-    movd      m1, [blockq+32*2] ; C
-    punpcklwd m0, [blockq+32*1] ; A B
-    punpcklwd m1, [blockq+32*3] ; C D
-    punpckldq m0, m1        ; A B C D
-    pxor      m6, m6
-
-    ; calculate DC
-    paddw     m0, [pw_4]
-    movd [blockq+32*0], m6
-    movd [blockq+32*1], m6
-    movd [blockq+32*2], m6
-    movd [blockq+32*3], m6
-    psraw     m0, 3
-    psubw     m6, m0
-    packuswb  m0, m0
-    packuswb  m6, m6
-    punpcklbw m0, m0 ; AABBCCDD
-    punpcklbw m6, m6 ; AABBCCDD
-    movq      m1, m0
-    movq      m7, m6
-    punpcklbw m0, m0 ; AAAABBBB
-    punpckhbw m1, m1 ; CCCCDDDD
-    punpcklbw m6, m6 ; AAAABBBB
-    punpckhbw m7, m7 ; CCCCDDDD
-
-    ; add DC
-    DEFINE_ARGS dst1, dst2, stride
-    lea    dst2q, [dst1q+strideq*2]
-    ADD_DC    m0, m6, 0, mova
-    lea    dst1q, [dst1q+strideq*4]
-    lea    dst2q, [dst2q+strideq*4]
-    ADD_DC    m1, m7, 0, mova
-    RET
-
-;-----------------------------------------------------------------------------
 ; void ff_vp8_idct_add_<opt>(uint8_t *dst, int16_t block[16], ptrdiff_t stride);
 ;-----------------------------------------------------------------------------
 
@@ -1009,84 +954,3 @@ cglobal vp8_idct_dc_add4uv, 3, 3, 0, dst, block, stride
     SWAP                 %4,  %1
     SWAP                 %4,  %3
 %endmacro
-
-INIT_MMX sse
-cglobal vp8_idct_add, 3, 3, 0, dst, block, stride
-    ; load block data
-    movq         m0, [blockq+ 0]
-    movq         m1, [blockq+ 8]
-    movq         m2, [blockq+16]
-    movq         m3, [blockq+24]
-    movq         m6, [pw_20091]
-    movq         m7, [pw_17734]
-    xorps      xmm0, xmm0
-    movaps [blockq+ 0], xmm0
-    movaps [blockq+16], xmm0
-
-    ; actual IDCT
-    VP8_IDCT_TRANSFORM4x4_1D 0, 1, 2, 3, 4, 5
-    TRANSPOSE4x4W            0, 1, 2, 3, 4
-    paddw        m0, [pw_4]
-    VP8_IDCT_TRANSFORM4x4_1D 0, 1, 2, 3, 4, 5
-    TRANSPOSE4x4W            0, 1, 2, 3, 4
-
-    ; store
-    pxor         m4, m4
-    DEFINE_ARGS dst1, dst2, stride
-    lea       dst2q, [dst1q+2*strideq]
-    STORE_DIFFx2 m0, m1, m6, m7, m4, 3, dst1q, strideq
-    STORE_DIFFx2 m2, m3, m6, m7, m4, 3, dst2q, strideq
-
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_vp8_luma_dc_wht(int16_t block[4][4][16], int16_t dc[16])
-;-----------------------------------------------------------------------------
-
-%macro SCATTER_WHT 3
-    movd dc1d, m%1
-    movd dc2d, m%2
-    mov [blockq+2*16*(0+%3)], dc1w
-    mov [blockq+2*16*(1+%3)], dc2w
-    shr  dc1d, 16
-    shr  dc2d, 16
-    psrlq m%1, 32
-    psrlq m%2, 32
-    mov [blockq+2*16*(4+%3)], dc1w
-    mov [blockq+2*16*(5+%3)], dc2w
-    movd dc1d, m%1
-    movd dc2d, m%2
-    mov [blockq+2*16*(8+%3)], dc1w
-    mov [blockq+2*16*(9+%3)], dc2w
-    shr  dc1d, 16
-    shr  dc2d, 16
-    mov [blockq+2*16*(12+%3)], dc1w
-    mov [blockq+2*16*(13+%3)], dc2w
-%endmacro
-
-%macro HADAMARD4_1D 4
-    SUMSUB_BADC w, %2, %1, %4, %3
-    SUMSUB_BADC w, %4, %2, %3, %1
-    SWAP %1, %4, %3
-%endmacro
-
-INIT_MMX sse
-cglobal vp8_luma_dc_wht, 2, 3, 0, block, dc1, dc2
-    movq          m0, [dc1q]
-    movq          m1, [dc1q+8]
-    movq          m2, [dc1q+16]
-    movq          m3, [dc1q+24]
-    xorps      xmm0, xmm0
-    movaps [dc1q+ 0], xmm0
-    movaps [dc1q+16], xmm0
-    HADAMARD4_1D  0, 1, 2, 3
-    TRANSPOSE4x4W 0, 1, 2, 3, 4
-    paddw         m0, [pw_3]
-    HADAMARD4_1D  0, 1, 2, 3
-    psraw         m0, 3
-    psraw         m1, 3
-    psraw         m2, 3
-    psraw         m3, 3
-    SCATTER_WHT   0, 1, 0
-    SCATTER_WHT   2, 3, 2
-    RET

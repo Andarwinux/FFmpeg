@@ -578,9 +578,6 @@ cglobal resample_linear_%1, 1, 7, 5, ctx, min_filter_length_x4, filter2, \
     RET
 %endmacro
 
-INIT_XMM sse
-RESAMPLE_FNS float, 4, 2, s, pf_1
-
 %if HAVE_AVX_EXTERNAL
 INIT_YMM avx
 RESAMPLE_FNS float, 4, 2, s, pf_1

@@ -46,9 +46,7 @@ cglobal clear_block, 1, 1, %1, blocks
     RET
 %endmacro
 
-INIT_XMM sse
 %define ZERO xorps
-CLEAR_BLOCK 1, 2
 INIT_YMM avx
 CLEAR_BLOCK 1, 1
 
@@ -75,9 +73,7 @@ cglobal clear_blocks, 1, 2, %1, blocks, len
     RET
 %endmacro
 
-INIT_XMM sse
 %define ZERO xorps
-CLEAR_BLOCKS 1
 INIT_YMM avx
 CLEAR_BLOCKS 1
 

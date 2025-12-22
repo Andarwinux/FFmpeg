@@ -200,11 +200,6 @@ cglobal vp9_iwht_iwht_4x4_add_%1, 3, 3, 8, dst, stride, block, eob
     RET
 %endmacro
 
-INIT_MMX mmxext
-IWHT4_FN 10, 1023
-INIT_MMX mmxext
-IWHT4_FN 12, 4095
-
 %macro VP9_IDCT4_WRITEOUT 0
 %if cpuflag(ssse3)
     mova                m5, [pw_2048]

@@ -222,13 +222,6 @@ mix_2_1_int16_u_int %+ SUFFIX:
 %endif
 %endmacro
 
-
-INIT_XMM sse
-MIX2_FLT u
-MIX2_FLT a
-MIX1_FLT u
-MIX1_FLT a
-
 INIT_XMM sse2
 MIX1_INT16 u
 MIX1_INT16 a

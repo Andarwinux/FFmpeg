@@ -29,26 +29,6 @@ float_abs_mask: times 4 dd 0x7fffffff
 SECTION .text
 
 ;*******************************************************************
-;void ff_abs_pow34(float *out, const float *in, const int size);
-;*******************************************************************
-INIT_XMM sse
-cglobal abs_pow34, 3, 3, 3, out, in, size
-    mova   m2, [float_abs_mask]
-    shl    sized, 2
-    add    inq, sizeq
-    add    outq, sizeq
-    neg    sizeq
-.loop:
-    andps  m0, m2, [inq+sizeq]
-    sqrtps m1, m0
-    mulps  m0, m1
-    sqrtps m0, m0
-    mova   [outq+sizeq], m0
-    add    sizeq, mmsize
-    jl    .loop
-    RET
-
-;*******************************************************************
 ;void ff_aac_quantize_bands(int *out, const float *in, const float *scaled,
 ;                           int size, int is_signed, int maxval, const float Q34,
 ;                           const float rounding)

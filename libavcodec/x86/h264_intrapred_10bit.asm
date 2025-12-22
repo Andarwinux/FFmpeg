@@ -173,31 +173,6 @@ PRED4x4_HD
 %endif
 
 ;-----------------------------------------------------------------------------
-; void ff_pred4x4_dc_10(pixel *src, const pixel *topright, ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_dc_10, 3, 3
-    sub    r0, r2
-    lea    r1, [r0+r2*2]
-    movq   m2, [r0+r2*1-8]
-    paddw  m2, [r0+r2*2-8]
-    paddw  m2, [r1+r2*1-8]
-    paddw  m2, [r1+r2*2-8]
-    psrlq  m2, 48
-    movq   m0, [r0]
-    HADDW  m0, m1
-    paddw  m0, [pw_4]
-    paddw  m0, m2
-    psrlw  m0, 3
-    SPLATW m0, m0, 0
-    movq   [r0+r2*1], m0
-    movq   [r0+r2*2], m0
-    movq   [r1+r2*1], m0
-    movq   [r1+r2*2], m0
-    RET
-
-;-----------------------------------------------------------------------------
 ; void ff_pred4x4_down_left_10(pixel *src, const pixel *topright,
 ;                              ptrdiff_t stride)
 ;-----------------------------------------------------------------------------
@@ -257,41 +232,6 @@ PRED4x4_VL
 INIT_XMM avx
 PRED4x4_VL
 %endif
-
-;-----------------------------------------------------------------------------
-; void ff_pred4x4_horizontal_up_10(pixel *src, const pixel *topright,
-;                                  ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-INIT_MMX mmxext
-cglobal pred4x4_horizontal_up_10, 3, 3
-    sub       r0, r2
-    lea       r1, [r0+r2*2]
-    movq      m0, [r0+r2*1-8]
-    punpckhwd m0, [r0+r2*2-8]
-    movq      m1, [r1+r2*1-8]
-    punpckhwd m1, [r1+r2*2-8]
-    punpckhdq m0, m1
-    pshufw    m1, m1, 0xFF
-    movq      [r1+r2*2], m1
-    movd      [r1+r2*1+4], m1
-    pshufw    m2, m0, 11111001b
-    movq      m1, m2
-    pavgw     m2, m0
-
-    pshufw    m5, m0, 11111110b
-    PRED4x4_LOWPASS m1, m0, m5, m1
-    movq      m6, m2
-    punpcklwd m6, m1
-    movq      [r0+r2*1], m6
-    psrlq     m2, 16
-    psrlq     m1, 16
-    punpcklwd m2, m1
-    movq      [r0+r2*2], m2
-    psrlq     m2, 32
-    movd      [r1+r2*1], m2
-    RET
-
-
 
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8_vertical_10(pixel *src, ptrdiff_t stride)

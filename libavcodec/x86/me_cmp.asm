@@ -422,8 +422,6 @@ align 16
     RET
 %endmacro
 
-INIT_MMX mmxext
-SAD 8
 INIT_XMM sse2
 SAD 16
 SAD 16, u
@@ -479,8 +477,6 @@ align 16
     RET
 %endmacro
 
-INIT_MMX mmxext
-SAD_X2 8
 INIT_XMM sse2
 SAD_X2 16
 
@@ -525,8 +521,6 @@ align 16
     RET
 %endmacro
 
-INIT_MMX mmxext
-SAD_Y2 8
 INIT_XMM sse2
 SAD_Y2 16
 
@@ -691,8 +685,6 @@ align 16
     RET
 %endmacro
 
-INIT_MMX mmxext
-SAD_APPROX_XY2 8
 INIT_XMM sse2
 SAD_APPROX_XY2 16
 
@@ -731,8 +723,6 @@ cglobal vsad_intra%1,  5, 5, 3, v, pix1, pix2, lsize, h
     RET
 %endmacro
 
-INIT_MMX mmxext
-VSAD_INTRA  8, a
 INIT_XMM sse2
 VSAD_INTRA 16, a
 VSAD_INTRA 16, u
@@ -795,8 +785,6 @@ cglobal vsad%1_approx,  5, 5, 5, v, pix1, pix2, lsize, h
     RET
 %endmacro
 
-INIT_MMX mmxext
-VSAD_APPROX 8,  a
 INIT_XMM sse2
 VSAD_APPROX 16, a
 VSAD_APPROX 16, u

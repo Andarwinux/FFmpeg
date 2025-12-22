@@ -214,9 +214,9 @@ av_cold void ff_h264dsp_init_x86(H264DSPContext *c, const int bit_depth,
 
             c->h264_idct_add16 = ff_h264_idct_add16_8_sse2;
             c->h264_idct8_add4 = ff_h264_idct8_add4_8_sse2;
-            if (chroma_format_idc <= 1)
-                c->h264_idct_add8 = ff_h264_idct_add8_8_sse2;
-            c->h264_idct_add16intra      = ff_h264_idct_add16intra_8_sse2;
+            //if (chroma_format_idc <= 1)
+                //c->h264_idct_add8 = ff_h264_idct_add8_8_sse2;
+            //c->h264_idct_add16intra      = ff_h264_idct_add16intra_8_sse2;
             c->h264_luma_dc_dequant_idct = ff_h264_luma_dc_dequant_idct_sse2;
 
             c->weight_h264_pixels_tab[0] = ff_h264_weight_16_sse2;
