@@ -81,49 +81,10 @@ cglobal put_pixels8_x2, 4,5
     RET
 %endmacro
 
-INIT_MMX mmxext
-PUT_PIXELS8_X2
-
 ; void ff_put_pixels16_x2(uint8_t *block, const uint8_t *pixels, ptrdiff_t line_size, int h)
 ; The 8_X2 macro can easily be used here
 INIT_XMM sse2
 PUT_PIXELS8_X2
-
-
-; void ff_put_no_rnd_pixels8_x2(uint8_t *block, const uint8_t *pixels, ptrdiff_t line_size, int h)
-INIT_MMX mmxext
-cglobal put_no_rnd_pixels8_x2, 4,5
-    mova         m6, [pb_1]
-    lea          r4, [r2*2]
-.loop:
-    mova         m0, [r1]
-    mova         m2, [r1+r2]
-    mova         m1, [r1+1]
-    mova         m3, [r1+r2+1]
-    add          r1, r4
-    psubusb      m0, m6
-    psubusb      m2, m6
-    pavgb        m0, m1
-    pavgb        m2, m3
-    mova       [r0], m0
-    mova    [r0+r2], m2
-    mova         m0, [r1]
-    mova         m1, [r1+1]
-    mova         m2, [r1+r2]
-    mova         m3, [r1+r2+1]
-    add          r0, r4
-    add          r1, r4
-    psubusb      m0, m6
-    psubusb      m2, m6
-    pavgb        m0, m1
-    pavgb        m2, m3
-    mova       [r0], m0
-    mova    [r0+r2], m2
-    add          r0, r4
-    sub         r3d, 4
-    jne .loop
-    RET
-
 
 %macro NO_RND_PIXELS_X2 1
 %if cpuflag(sse2)
@@ -178,8 +139,6 @@ cglobal %1_no_rnd_pixels8_x2_exact, 4,5
     RET
 %endmacro
 
-INIT_MMX mmxext
-NO_RND_PIXELS_X2 put
 INIT_XMM sse2
 NO_RND_PIXELS_X2 avg
 NO_RND_PIXELS_X2 put
@@ -216,43 +175,8 @@ cglobal put_pixels8_y2, 4,5
     RET
 %endmacro
 
-INIT_MMX mmxext
-PUT_PIXELS8_Y2
-; actually, put_pixels16_y2_sse2
 INIT_XMM sse2
 PUT_PIXELS8_Y2
-
-
-; void ff_put_no_rnd_pixels8_y2(uint8_t *block, const uint8_t *pixels, ptrdiff_t line_size, int h)
-INIT_MMX mmxext
-cglobal put_no_rnd_pixels8_y2, 4,5
-    mova         m6, [pb_1]
-    lea          r4, [r2+r2]
-    mova         m0, [r1]
-    sub          r0, r2
-.loop:
-    mova         m1, [r1+r2]
-    mova         m2, [r1+r4]
-    add          r1, r4
-    psubusb      m1, m6
-    pavgb        m0, m1
-    pavgb        m1, m2
-    mova    [r0+r2], m0
-    mova    [r0+r4], m1
-    mova         m1, [r1+r2]
-    mova         m0, [r1+r4]
-    add          r0, r4
-    add          r1, r4
-    psubusb      m1, m6
-    pavgb        m2, m1
-    pavgb        m1, m0
-    mova    [r0+r2], m2
-    mova    [r0+r4], m1
-    add          r0, r4
-    sub         r3d, 4
-    jne .loop
-    RET
-
 
 %macro NO_RND_PIXELS_Y2 1
 %if cpuflag(sse2)
@@ -302,8 +226,6 @@ cglobal %1_no_rnd_pixels8_y2_exact, 4,5
     RET
 %endmacro
 
-INIT_MMX mmxext
-NO_RND_PIXELS_Y2 put
 INIT_XMM sse2
 NO_RND_PIXELS_Y2 avg
 NO_RND_PIXELS_Y2 put
@@ -356,9 +278,6 @@ cglobal avg_pixels8_x2, 4,5
     RET
 %endmacro
 
-INIT_MMX mmxext
-AVG_PIXELS8_X2
-; actually avg_pixels16_x2
 INIT_XMM sse2
 AVG_PIXELS8_X2
 
@@ -399,9 +318,6 @@ cglobal avg_pixels8_y2, 4,5
     RET
 %endmacro
 
-INIT_MMX mmxext
-AVG_PIXELS8_Y2
-; actually avg_pixels16_y2
 INIT_XMM sse2
 AVG_PIXELS8_Y2
 

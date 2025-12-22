@@ -45,16 +45,6 @@ cextern pw_1023
     movd         [r0+r2], m2
 %endmacro
 
-
-INIT_MMX mmxext
-; void ff_hevc_add_residual_4_8_mmxext(uint8_t *dst, const int16_t *res, ptrdiff_t stride)
-cglobal hevc_add_residual_4_8, 3, 3, 6
-    pxor              m4, m4
-    ADD_RES_MMX_4_8    0
-    lea               r0, [r0+r2*2]
-    ADD_RES_MMX_4_8   16
-    RET
-
 %macro ADD_RES_SSE_8_8 1
     movq              m0, [r0]
     movq              m1, [r0+r2]
@@ -283,16 +273,6 @@ cglobal hevc_add_residual_32_8, 3, 5, 7
     mova         [%1+%2], m2
     mova      [%1+%2+32], m3
 %endmacro
-
-; void ff_hevc_add_residual_<4|8|16|32>_10(pixel *dst, const int16_t *block, ptrdiff_t stride)
-INIT_MMX mmxext
-cglobal hevc_add_residual_4_10, 3, 3, 6
-    pxor              m2, m2
-    mova              m3, [max_pixels_10]
-    ADD_RES_MMX_4_10  r0, r2, r1
-    lea               r0, [r0+2*r2]
-    ADD_RES_MMX_4_10  r0, r2, r1+16
-    RET
 
 INIT_XMM sse2
 cglobal hevc_add_residual_8_10, 3, 4, 6

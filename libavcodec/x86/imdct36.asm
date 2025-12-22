@@ -727,9 +727,6 @@ cglobal four_imdct36_float, 5,5,16, out, buf, in, win, tmp
     RET
 %endmacro
 
-INIT_XMM sse
-DEFINE_FOUR_IMDCT
-
 %if HAVE_AVX_EXTERNAL
 INIT_XMM avx
 DEFINE_FOUR_IMDCT

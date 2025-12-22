@@ -76,9 +76,6 @@ cglobal %1_pixels%2, 4,5+4*%3,%3 ? 4 : 0
     RET
 %endmacro
 
-INIT_MMX mmxext
-OP_PIXELS avg, 8
-
 INIT_XMM sse2
 OP_PIXELS put, 8, UNIX64
 OP_PIXELS put, 16

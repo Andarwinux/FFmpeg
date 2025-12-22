@@ -829,9 +829,6 @@ cglobal postscale_slice, 2, 2, 4, ptr, length, postscale, min, max
     RET
 %endmacro
 
-INIT_XMM sse
-POSTSCALE_SLICE
-
 %if HAVE_AVX2_EXTERNAL
 INIT_YMM avx2
 POSTSCALE_SLICE

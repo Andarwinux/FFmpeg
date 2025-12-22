@@ -155,8 +155,5 @@ cglobal add_png_paeth_prediction, 5, 7, %1, dst, src, top, w, bpp, end, cntr
     RET
 %endmacro
 
-INIT_MMX mmxext
-ADD_PAETH_PRED_FN 0
-
 INIT_MMX ssse3
 ADD_PAETH_PRED_FN 0

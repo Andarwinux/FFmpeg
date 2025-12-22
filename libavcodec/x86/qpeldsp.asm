@@ -98,10 +98,6 @@ put_no_rnd_pixels8x8_after_prologue_ %+ cpuname:
     RET
 %endmacro
 
-INIT_MMX mmxext
-PUT_NO_RND_PIXELS8_L2
-
-
 ; void ff_put_no_rnd_pixels16x17_l2(uint8_t *dst, const uint8_t *src1, const uint8_t *src2,
 ;                                   ptrdiff_t dstStride, ptrdiff_t src1Stride)
 %macro PUT_NO_RND_PIXELS16_l2 0
@@ -170,9 +166,6 @@ put_no_rnd_pixels16x16_after_prologue_ %+ cpuname:
     jne .loop
     RET
 %endmacro
-
-INIT_MMX mmxext
-PUT_NO_RND_PIXELS16_l2
 
 %macro MPEG4_QPEL16_H_LOWPASS 1
 cglobal %1_mpeg4_qpel16_h_lowpass, 5, 5, 0, 16
@@ -292,19 +285,6 @@ cglobal %1_mpeg4_qpel16_h_lowpass, 5, 5, 0, 16
     mova  %1, %2
 %endmacro
 
-INIT_MMX mmxext
-%define PW_ROUND pw_16
-%define OP_MOV PUT_OP
-MPEG4_QPEL16_H_LOWPASS put
-%define PW_ROUND pw_16
-%define OP_MOV AVG_OP
-MPEG4_QPEL16_H_LOWPASS avg
-%define PW_ROUND pw_15
-%define OP_MOV PUT_OP
-MPEG4_QPEL16_H_LOWPASS put_no_rnd
-
-
-
 %macro MPEG4_QPEL8_H_LOWPASS 1
 cglobal %1_mpeg4_qpel8_h_lowpass, 5, 5, 0, 8
     pxor         m7, m7
@@ -362,19 +342,6 @@ cglobal %1_mpeg4_qpel8_h_lowpass, 5, 5, 0, 8
     jne .loop
     RET
 %endmacro
-
-INIT_MMX mmxext
-%define PW_ROUND pw_16
-%define OP_MOV PUT_OP
-MPEG4_QPEL8_H_LOWPASS put
-%define PW_ROUND pw_16
-%define OP_MOV AVG_OP
-MPEG4_QPEL8_H_LOWPASS avg
-%define PW_ROUND pw_15
-%define OP_MOV PUT_OP
-MPEG4_QPEL8_H_LOWPASS put_no_rnd
-
-
 
 %macro QPEL_V_LOW 5
     paddw      m0, m1
@@ -479,19 +446,6 @@ cglobal %1_mpeg4_qpel16_v_lowpass, 4, 6, 0, 544
     movh  %1, %2
 %endmacro
 
-INIT_MMX mmxext
-%define PW_ROUND pw_16
-%define OP_MOV PUT_OPH
-MPEG4_QPEL16_V_LOWPASS put
-%define PW_ROUND pw_16
-%define OP_MOV AVG_OPH
-MPEG4_QPEL16_V_LOWPASS avg
-%define PW_ROUND pw_15
-%define OP_MOV PUT_OPH
-MPEG4_QPEL16_V_LOWPASS put_no_rnd
-
-
-
 %macro MPEG4_QPEL8_V_LOWPASS 1
 cglobal %1_mpeg4_qpel8_v_lowpass, 4, 6, 0, 288
     mov         r4d, 9
@@ -542,14 +496,3 @@ cglobal %1_mpeg4_qpel8_v_lowpass, 4, 6, 0, 288
     jne .loopv
     RET
 %endmacro
-
-INIT_MMX mmxext
-%define PW_ROUND pw_16
-%define OP_MOV PUT_OPH
-MPEG4_QPEL8_V_LOWPASS put
-%define PW_ROUND pw_16
-%define OP_MOV AVG_OPH
-MPEG4_QPEL8_V_LOWPASS avg
-%define PW_ROUND pw_15
-%define OP_MOV PUT_OPH
-MPEG4_QPEL8_V_LOWPASS put_no_rnd

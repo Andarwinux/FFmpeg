@@ -394,12 +394,3 @@ H_EXTEND 2, 22
 INIT_XMM avx2
 H_EXTEND 8, 22
 %endif
-
-INIT_MMX mmxext
-cglobal prefetch, 3, 3, 0, buf, stride, h
-.loop:
-    prefetcht0 [bufq]
-    add      bufq, strideq
-    dec        hd
-    jg .loop
-    RET

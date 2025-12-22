@@ -116,16 +116,6 @@ cglobal %1_%2_chroma_mc2, 6, 7, 0
     PAVGB         %1, %2
 %endmacro
 
-
-INIT_MMX mmxext
-%define CHROMAMC_AVG  NOTHING
-%define CHROMAMC_AVG4 NOTHING
-chroma_mc2_mmx_func put, h264
-
-%define CHROMAMC_AVG  DIRECT_AVG
-%define CHROMAMC_AVG4 COPY_AVG
-chroma_mc2_mmx_func avg, h264
-
 %macro chroma_mc8_ssse3_func 2-3
 cglobal %1_%2_chroma_mc8%3, 6, 7+UNIX64, 8
     mov          r6d, r5d

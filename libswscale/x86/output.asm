@@ -314,11 +314,6 @@ cglobal yuv2planeX_%1, %3, 8, %2, filter, fltsize, src, dst, w, dither, offset
 %endif ; %1 == 8/9/10/16
 %endmacro
 
-%if ARCH_X86_32 && HAVE_ALIGNED_STACK == 0
-INIT_MMX mmxext
-yuv2planeX_fn  8,  0, 7
-%endif
-
 INIT_XMM sse2
 yuv2planeX_fn  8, 10, 7
 yuv2planeX_fn  9,  7, 5

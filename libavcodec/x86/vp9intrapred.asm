@@ -326,59 +326,6 @@ INIT_XMM ssse3
 DC_1D_16to32_FUNCS top,  a
 DC_1D_16to32_FUNCS left, l
 
-INIT_MMX mmx
-cglobal vp9_ipred_v_8x8, 4, 4, 0, dst, stride, l, a
-    movq                    m0, [aq]
-    DEFINE_ARGS dst, stride, stride3
-    lea               stride3q, [strideq*3]
-    movq      [dstq+strideq*0], m0
-    movq      [dstq+strideq*1], m0
-    movq      [dstq+strideq*2], m0
-    movq      [dstq+stride3q ], m0
-    lea                   dstq, [dstq+strideq*4]
-    movq      [dstq+strideq*0], m0
-    movq      [dstq+strideq*1], m0
-    movq      [dstq+strideq*2], m0
-    movq      [dstq+stride3q ], m0
-    RET
-
-INIT_XMM sse
-cglobal vp9_ipred_v_16x16, 4, 4, 1, dst, stride, l, a
-    mova                    m0, [aq]
-    DEFINE_ARGS dst, stride, stride3, cnt
-    lea               stride3q, [strideq*3]
-    mov                   cntd, 4
-.loop:
-    mova      [dstq+strideq*0], m0
-    mova      [dstq+strideq*1], m0
-    mova      [dstq+strideq*2], m0
-    mova      [dstq+stride3q ], m0
-    lea                   dstq, [dstq+strideq*4]
-    dec                   cntd
-    jg .loop
-    RET
-
-INIT_XMM sse
-cglobal vp9_ipred_v_32x32, 4, 4, 2, dst, stride, l, a
-    mova                    m0, [aq]
-    mova                    m1, [aq+16]
-    DEFINE_ARGS dst, stride, stride3, cnt
-    lea               stride3q, [strideq*3]
-    mov                   cntd, 8
-.loop:
-    mova   [dstq+strideq*0+ 0], m0
-    mova   [dstq+strideq*0+16], m1
-    mova   [dstq+strideq*1+ 0], m0
-    mova   [dstq+strideq*1+16], m1
-    mova   [dstq+strideq*2+ 0], m0
-    mova   [dstq+strideq*2+16], m1
-    mova   [dstq+stride3q + 0], m0
-    mova   [dstq+stride3q +16], m1
-    lea                   dstq, [dstq+strideq*4]
-    dec                   cntd
-    jg .loop
-    RET
-
 %macro H_XMM_FUNCS 2
 %if notcpuflag(avx)
 cglobal vp9_ipred_h_4x4, 3, 4, 1, dst, stride, l, stride3
@@ -1023,22 +970,6 @@ DR_XMM_FUNCS
 
 ; vl
 
-INIT_MMX mmxext
-cglobal vp9_ipred_vl_4x4, 4, 4, 0, dst, stride, l, a
-    movq                    m0, [aq]
-    psrlq                   m1, m0, 8
-    psrlq                   m2, m1, 8
-    LOWPASS                  2,  1, 0, 3
-    pavgb                   m1, m0
-    movd      [dstq+strideq*0], m1
-    movd      [dstq+strideq*1], m2
-    lea                   dstq, [dstq+strideq*2]
-    psrlq                   m1, 8
-    psrlq                   m2, 8
-    movd      [dstq+strideq*0], m1
-    movd      [dstq+strideq*1], m2
-    RET
-
 %macro VL_XMM_FUNCS 0
 cglobal vp9_ipred_vl_8x8, 4, 4, 4, dst, stride, l, a
     movq                    m0, [aq]
@@ -1387,36 +1318,6 @@ INIT_XMM avx
 VR_XMM_FUNCS 6
 
 ; hd
-
-INIT_MMX mmxext
-cglobal vp9_ipred_hd_4x4, 4, 4, 0, dst, stride, l, a
-    movd                    m0, [lq]
-    punpckldq               m0, [aq-1]
-    DEFINE_ARGS dst, stride, stride3
-    lea               stride3q, [strideq*3]
-    psrlq                   m1, m0, 8
-    psrlq                   m2, m1, 8
-    LOWPASS                  2,  1, 0,  3
-    pavgb                   m1, m0
-
-    ; DHIJ <- for the following predictor:
-    ; CGDH
-    ; BFCG  | m1 contains ABCDxxxx
-    ; AEBF  | m2 contains EFGHIJxx
-
-    punpcklbw               m1, m2
-    punpckhdq               m0, m1, m2
-
-    ; m1 contains AEBFCGDH
-    ; m0 contains CGDHIJxx
-
-    movd      [dstq+stride3q ], m1
-    movd      [dstq+strideq*1], m0
-    psrlq                   m1, 16
-    psrlq                   m0, 16
-    movd      [dstq+strideq*2], m1
-    movd      [dstq+strideq*0], m0
-    RET
 
 %macro HD_XMM_FUNCS 0
 cglobal vp9_ipred_hd_8x8, 4, 4, 5, dst, stride, l, a

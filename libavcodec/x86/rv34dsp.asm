@@ -44,18 +44,6 @@ SECTION .text
     sar    %1, 10
 %endmacro
 
-INIT_MMX mmxext
-cglobal rv34_idct_dc_noround, 1, 2, 0
-    movsx   r1, word [r0]
-    IDCT_DC_NOROUND r1
-    movd    m0, r1d
-    pshufw  m0, m0, 0
-    movq    [r0+ 0], m0
-    movq    [r0+ 8], m0
-    movq    [r0+16], m0
-    movq    [r0+24], m0
-    RET
-
 ; Load coeffs and perform row transform
 ; Output: coeffs in mm[0467], rounder in mm5
 %macro ROW_TRANSFORM  1
@@ -112,17 +100,6 @@ cglobal rv34_idct_dc_noround, 1, 2, 0
     packuswb     %2, %2
     movd         %1, %2
 %endmacro
-INIT_MMX mmxext
-cglobal rv34_idct_add, 3, 3, 0, dst, s, b
-    ROW_TRANSFORM        bq
-    COL_TRANSFORM    [dstq], mm0, [pw_col_coeffs+ 0], [pw_col_coeffs+ 8]
-    mova                mm0, [pw_col_coeffs+ 0]
-    COL_TRANSFORM [dstq+sq], mm4, mm0, [pw_col_coeffs+ 8]
-    mova                mm4, [pw_col_coeffs+ 8]
-    lea                dstq, [dstq + 2*sq]
-    COL_TRANSFORM    [dstq], mm6, mm0, mm4
-    COL_TRANSFORM [dstq+sq], mm7, mm0, mm4
-    ret
 
 ; ff_rv34_idct_dc_add_sse4(uint8_t *dst, int stride, int dc);
 %macro RV34_IDCT_DC_ADD 0

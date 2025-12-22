@@ -51,8 +51,6 @@ ALIGN 16
     RET
 %endmacro
 
-INIT_XMM sse
-VECTOR_FMUL
 %if HAVE_AVX_EXTERNAL
 INIT_YMM avx
 VECTOR_FMUL
@@ -144,8 +142,6 @@ cglobal vector_fmac_scalar, 4,4,5, dst, src, mul, len
     RET
 %endmacro
 
-INIT_XMM sse
-VECTOR_FMAC_SCALAR
 %if HAVE_AVX_EXTERNAL
 INIT_YMM avx
 VECTOR_FMAC_SCALAR
@@ -180,9 +176,6 @@ cglobal vector_fmul_scalar, 4,4,3, dst, src, mul, len
     jge .loop
     RET
 %endmacro
-
-INIT_XMM sse
-VECTOR_FMUL_SCALAR
 
 ;------------------------------------------------------------------------------
 ; void ff_vector_dmac_scalar(double *dst, const double *src, double mul,
@@ -291,41 +284,6 @@ VECTOR_DMUL_SCALAR
 %endif
 
 ;-----------------------------------------------------------------------------
-; vector_fmul_window(float *dst, const float *src0,
-;                    const float *src1, const float *win, int len);
-;-----------------------------------------------------------------------------
-INIT_XMM sse
-cglobal vector_fmul_window, 5, 6, 6, dst, src0, src1, win, len, len1
-    shl     lend, 2
-    lea    len1q, [lenq - mmsize]
-    add    src0q, lenq
-    add     dstq, lenq
-    add     winq, lenq
-    neg     lenq
-.loop:
-    mova      m0, [winq  + lenq]
-    mova      m4, [src0q + lenq]
-    mova      m1, [winq  + len1q]
-    mova      m5, [src1q + len1q]
-    shufps    m1, m1, 0x1b
-    shufps    m5, m5, 0x1b
-    mova      m2, m0
-    mova      m3, m1
-    mulps     m2, m4
-    mulps     m3, m5
-    mulps     m1, m4
-    mulps     m0, m5
-    addps     m2, m3
-    subps     m1, m0
-    shufps    m2, m2, 0x1b
-    mova      [dstq + lenq], m1
-    mova      [dstq + len1q], m2
-    sub       len1q, mmsize
-    add       lenq,  mmsize
-    jl .loop
-    RET
-
-;-----------------------------------------------------------------------------
 ; vector_fmul_add(float *dst, const float *src0, const float *src1,
 ;                 const float *src2, int len)
 ;-----------------------------------------------------------------------------
@@ -355,8 +313,6 @@ ALIGN 16
     RET
 %endmacro
 
-INIT_XMM sse
-VECTOR_FMUL_ADD
 %if HAVE_AVX_EXTERNAL
 INIT_YMM avx
 VECTOR_FMUL_ADD
@@ -404,8 +360,6 @@ ALIGN 16
     RET
 %endmacro
 
-INIT_XMM sse
-VECTOR_FMUL_REVERSE
 %if HAVE_AVX_EXTERNAL
 INIT_YMM avx
 VECTOR_FMUL_REVERSE
@@ -414,31 +368,6 @@ VECTOR_FMUL_REVERSE
 INIT_YMM avx2
 VECTOR_FMUL_REVERSE
 %endif
-
-; float scalarproduct_float_sse(const float *v1, const float *v2, int len)
-INIT_XMM sse
-cglobal scalarproduct_float, 3,3,2, v1, v2, offset
-    shl   offsetd, 2
-    add       v1q, offsetq
-    add       v2q, offsetq
-    neg   offsetq
-    xorps    xmm0, xmm0
-.loop:
-    movaps   xmm1, [v1q+offsetq]
-    mulps    xmm1, [v2q+offsetq]
-    addps    xmm0, xmm1
-    add   offsetq, 16
-    js .loop
-    movhlps  xmm1, xmm0
-    addps    xmm0, xmm1
-    movss    xmm1, xmm0
-    shufps   xmm0, xmm0, 1
-    addss    xmm0, xmm1
-%if ARCH_X86_64 == 0
-    movss     r0m,  xmm0
-    fld dword r0m
-%endif
-    RET
 
 INIT_YMM fma3
 cglobal scalarproduct_float, 3,5,8, v1, v2, size, len, offset
@@ -618,23 +547,3 @@ SCALARPRODUCT_DOUBLE
 INIT_YMM avx
 SCALARPRODUCT_DOUBLE
 %endif
-
-;-----------------------------------------------------------------------------
-; void ff_butterflies_float(float *src0, float *src1, int len);
-;-----------------------------------------------------------------------------
-INIT_XMM sse
-cglobal butterflies_float, 3,3,3, src0, src1, len
-    shl       lend, 2
-    add      src0q, lenq
-    add      src1q, lenq
-    neg       lenq
-.loop:
-    mova        m0, [src0q + lenq]
-    mova        m1, [src1q + lenq]
-    subps       m2, m0, m1
-    addps       m0, m0, m1
-    mova        [src1q + lenq], m2
-    mova        [src0q + lenq], m0
-    add       lenq, mmsize
-    jl .loop
-    RET

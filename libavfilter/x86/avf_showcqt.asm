@@ -174,8 +174,6 @@ cglobal showcqt_cqt_calc, 4, 7, 8, dst, src, coeffs, len, x, coeffs_val, i
 %endif ; ARCH_X86_64
 %endmacro ; DECLARE_CQT_CALC
 
-INIT_XMM sse
-DECLARE_CQT_CALC
 INIT_XMM sse3
 DECLARE_CQT_CALC
 %if HAVE_AVX_EXTERNAL

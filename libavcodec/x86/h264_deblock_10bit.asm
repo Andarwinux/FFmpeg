@@ -798,11 +798,6 @@ cglobal deblock_h_luma_intra_10, 4,7,8*(mmsize/16)
 %endmacro
 
 %if ARCH_X86_64 == 0
-%if HAVE_ALIGNED_STACK == 0
-INIT_MMX mmxext
-DEBLOCK_LUMA
-DEBLOCK_LUMA_INTRA
-%endif
 INIT_XMM sse2
 DEBLOCK_LUMA
 DEBLOCK_LUMA_INTRA

@@ -169,9 +169,6 @@ cglobal ac3_downmix_%1_to_%2, 3,in_channels+1,total_mmregs,0-matrix_elements_sta
 %macro AC3_DOWNMIX_FUNCS 0
 %assign %%i 3
 %rep 4
-    INIT_XMM sse
-    AC3_DOWNMIX %%i, 1
-    AC3_DOWNMIX %%i, 2
     INIT_YMM avx
     AC3_DOWNMIX %%i, 1
     AC3_DOWNMIX %%i, 2

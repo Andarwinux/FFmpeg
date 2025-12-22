@@ -45,26 +45,6 @@ cextern pw_4
 cextern pw_8
 
 ;-----------------------------------------------------------------------------
-; void ff_pred16x16_vertical_8(uint8_t *src, ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_XMM sse
-cglobal pred16x16_vertical_8, 2,3
-    sub   r0, r1
-    mov   r2, 4
-    movaps xmm0, [r0]
-.loop:
-    movaps [r0+r1*1], xmm0
-    movaps [r0+r1*2], xmm0
-    lea   r0, [r0+r1*2]
-    movaps [r0+r1*1], xmm0
-    movaps [r0+r1*2], xmm0
-    lea   r0, [r0+r1*2]
-    dec   r2
-    jg .loop
-    RET
-
-;-----------------------------------------------------------------------------
 ; void ff_pred16x16_horizontal_8(uint8_t *src, ptrdiff_t stride)
 ;-----------------------------------------------------------------------------
 
@@ -600,142 +580,8 @@ cglobal pred8x8_horizontal_8, 2,3
     RET
 %endmacro
 
-INIT_MMX mmxext
-PRED8x8_H
 INIT_MMX ssse3
 PRED8x8_H
-
-;-----------------------------------------------------------------------------
-; void ff_pred8x8_top_dc_8_mmxext(uint8_t *src, ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-INIT_MMX mmxext
-cglobal pred8x8_top_dc_8, 2,5
-    sub         r0, r1
-    movq       mm0, [r0]
-    pxor       mm1, mm1
-    pxor       mm2, mm2
-    lea         r2, [r0+r1*2]
-    punpckhbw  mm1, mm0
-    punpcklbw  mm0, mm2
-    psadbw     mm1, mm2        ; s1
-    lea         r3, [r2+r1*2]
-    psadbw     mm0, mm2        ; s0
-    psrlw      mm1, 1
-    psrlw      mm0, 1
-    pavgw      mm1, mm2
-    lea         r4, [r3+r1*2]
-    pavgw      mm0, mm2
-    pshufw     mm1, mm1, 0
-    pshufw     mm0, mm0, 0     ; dc0 (w)
-    packuswb   mm0, mm1        ; dc0,dc1 (b)
-    movq [r0+r1*1], mm0
-    movq [r0+r1*2], mm0
-    lea         r0, [r3+r1*2]
-    movq [r2+r1*1], mm0
-    movq [r2+r1*2], mm0
-    movq [r3+r1*1], mm0
-    movq [r3+r1*2], mm0
-    movq [r0+r1*1], mm0
-    movq [r0+r1*2], mm0
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_pred8x8_dc_8_mmxext(uint8_t *src, ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred8x8_dc_8, 2,5
-    sub       r0, r1
-    pxor      m7, m7
-    movd      m0, [r0+0]
-    movd      m1, [r0+4]
-    psadbw    m0, m7            ; s0
-    mov       r4, r0
-    psadbw    m1, m7            ; s1
-
-    movzx    r2d, byte [r0+r1*1-1]
-    movzx    r3d, byte [r0+r1*2-1]
-    lea       r0, [r0+r1*2]
-    add      r2d, r3d
-    movzx    r3d, byte [r0+r1*1-1]
-    add      r2d, r3d
-    movzx    r3d, byte [r0+r1*2-1]
-    add      r2d, r3d
-    lea       r0, [r0+r1*2]
-    movd      m2, r2d            ; s2
-    movzx    r2d, byte [r0+r1*1-1]
-    movzx    r3d, byte [r0+r1*2-1]
-    lea       r0, [r0+r1*2]
-    add      r2d, r3d
-    movzx    r3d, byte [r0+r1*1-1]
-    add      r2d, r3d
-    movzx    r3d, byte [r0+r1*2-1]
-    add      r2d, r3d
-    movd      m3, r2d            ; s3
-
-    punpcklwd m0, m1
-    mov       r0, r4
-    punpcklwd m2, m3
-    punpckldq m0, m2            ; s0, s1, s2, s3
-    pshufw    m3, m0, 11110110b ; s2, s1, s3, s3
-    lea       r2, [r0+r1*2]
-    pshufw    m0, m0, 01110100b ; s0, s1, s3, s1
-    paddw     m0, m3
-    lea       r3, [r2+r1*2]
-    psrlw     m0, 2
-    pavgw     m0, m7            ; s0+s2, s1, s3, s1+s3
-    lea       r4, [r3+r1*2]
-    packuswb  m0, m0
-    punpcklbw m0, m0
-    movq      m1, m0
-    punpcklbw m0, m0
-    punpckhbw m1, m1
-    movq [r0+r1*1], m0
-    movq [r0+r1*2], m0
-    movq [r2+r1*1], m0
-    movq [r2+r1*2], m0
-    movq [r3+r1*1], m1
-    movq [r3+r1*2], m1
-    movq [r4+r1*1], m1
-    movq [r4+r1*2], m1
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_pred8x8_dc_rv40_8(uint8_t *src, ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred8x8_dc_rv40_8, 2,7
-    mov       r4, r0
-    sub       r0, r1
-    pxor      mm0, mm0
-    psadbw    mm0, [r0]
-    dec        r0
-    movzx     r5d, byte [r0+r1*1]
-    movd      r6d, mm0
-    lea        r0, [r0+r1*2]
-%rep 3
-    movzx     r2d, byte [r0+r1*0]
-    movzx     r3d, byte [r0+r1*1]
-    add       r5d, r2d
-    add       r6d, r3d
-    lea        r0, [r0+r1*2]
-%endrep
-    movzx     r2d, byte [r0+r1*0]
-    add       r5d, r6d
-    lea       r2d, [r2+r5+8]
-    shr       r2d, 4
-    movd      mm0, r2d
-    punpcklbw mm0, mm0
-    pshufw    mm0, mm0, 0
-    mov       r3d, 4
-.loop:
-    movq [r4+r1*0], mm0
-    movq [r4+r1*1], mm0
-    lea   r4, [r4+r1*2]
-    dec   r3d
-    jg .loop
-    RET
 
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8_tm_vp8_8(uint8_t *src, ptrdiff_t stride)
@@ -860,8 +706,6 @@ cglobal pred8x8l_top_dc_8, 4,4
     RET
 %endmacro
 
-INIT_MMX mmxext
-PRED8x8L_TOP_DC
 INIT_MMX ssse3
 PRED8x8L_TOP_DC
 
@@ -964,8 +808,6 @@ cglobal pred8x8l_dc_8, 4,5
     RET
 %endmacro
 
-INIT_MMX mmxext
-PRED8x8L_DC
 INIT_MMX ssse3
 PRED8x8L_DC
 
@@ -1036,8 +878,6 @@ cglobal pred8x8l_horizontal_8, 4,4
     RET
 %endmacro
 
-INIT_MMX mmxext
-PRED8x8L_HORIZONTAL
 INIT_MMX ssse3
 PRED8x8L_HORIZONTAL
 
@@ -1087,8 +927,6 @@ cglobal pred8x8l_vertical_8, 4,4
     RET
 %endmacro
 
-INIT_MMX mmxext
-PRED8x8L_VERTICAL
 INIT_MMX ssse3
 PRED8x8L_VERTICAL
 
@@ -1596,8 +1434,6 @@ cglobal pred8x8l_horizontal_up_8, 4,4
     RET
 %endmacro
 
-INIT_MMX mmxext
-PRED8x8L_HORIZONTAL_UP
 INIT_MMX ssse3
 PRED8x8L_HORIZONTAL_UP
 
@@ -1735,70 +1571,6 @@ PRED8x8L_HORIZONTAL_DOWN
 INIT_MMX ssse3
 PRED8x8L_HORIZONTAL_DOWN
 
-;-------------------------------------------------------------------------------
-; void ff_pred4x4_dc_8_mmxext(uint8_t *src, const uint8_t *topright,
-;                             ptrdiff_t stride)
-;-------------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_dc_8, 3,5
-    pxor   mm7, mm7
-    mov     r4, r0
-    sub     r0, r2
-    movd   mm0, [r0]
-    psadbw mm0, mm7
-    movzx  r1d, byte [r0+r2*1-1]
-    movd   r3d, mm0
-    add    r3d, r1d
-    movzx  r1d, byte [r0+r2*2-1]
-    lea     r0, [r0+r2*2]
-    add    r3d, r1d
-    movzx  r1d, byte [r0+r2*1-1]
-    add    r3d, r1d
-    movzx  r1d, byte [r0+r2*2-1]
-    add    r3d, r1d
-    add    r3d, 4
-    shr    r3d, 3
-    imul   r3d, 0x01010101
-    mov   [r4+r2*0], r3d
-    mov   [r0+r2*0], r3d
-    mov   [r0+r2*1], r3d
-    mov   [r0+r2*2], r3d
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_pred4x4_tm_vp8_8_mmxext(uint8_t *src, const uint8_t *topright,
-;                                 ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_tm_vp8_8, 3,6
-    sub        r0, r2
-    pxor      mm7, mm7
-    movd      mm0, [r0]
-    punpcklbw mm0, mm7
-    movzx     r4d, byte [r0-1]
-    mov       r5d, 2
-.loop:
-    movzx     r1d, byte [r0+r2*1-1]
-    movzx     r3d, byte [r0+r2*2-1]
-    sub       r1d, r4d
-    sub       r3d, r4d
-    movd      mm2, r1d
-    movd      mm4, r3d
-    pshufw    mm2, mm2, 0
-    pshufw    mm4, mm4, 0
-    paddw     mm2, mm0
-    paddw     mm4, mm0
-    packuswb  mm2, mm2
-    packuswb  mm4, mm4
-    movd [r0+r2*1], mm2
-    movd [r0+r2*2], mm4
-    lea        r0, [r0+r2*2]
-    dec       r5d
-    jg .loop
-    RET
-
 INIT_XMM ssse3
 cglobal pred4x4_tm_vp8_8, 3,3
     sub         r0, r2
@@ -1830,210 +1602,4 @@ cglobal pred4x4_tm_vp8_8, 3,3
     movd [r0+r2*2], mm3
     movd [r1+r2*1], mm4
     movd [r1+r2*2], mm5
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_pred4x4_vertical_vp8_8_mmxext(uint8_t *src, const uint8_t *topright,
-;                                       ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_vertical_vp8_8, 3,3
-    sub       r0, r2
-    movd      m1, [r0-1]
-    movd      m0, [r0]
-    mova      m2, m0   ;t0 t1 t2 t3
-    punpckldq m0, [r1] ;t0 t1 t2 t3 t4 t5 t6 t7
-    lea       r1, [r0+r2*2]
-    psrlq     m0, 8    ;t1 t2 t3 t4
-    PRED4x4_LOWPASS m3, m1, m0, m2, m4
-    movd [r0+r2*1], m3
-    movd [r0+r2*2], m3
-    movd [r1+r2*1], m3
-    movd [r1+r2*2], m3
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_pred4x4_down_left_8_mmxext(uint8_t *src, const uint8_t *topright,
-;                                    ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-INIT_MMX mmxext
-cglobal pred4x4_down_left_8, 3,3
-    sub       r0, r2
-    movq      m1, [r0]
-    punpckldq m1, [r1]
-    movq      m2, m1
-    movq      m3, m1
-    psllq     m1, 8
-    pxor      m2, m1
-    psrlq     m2, 8
-    pxor      m2, m3
-    PRED4x4_LOWPASS m0, m1, m2, m3, m4
-    lea       r1, [r0+r2*2]
-    psrlq     m0, 8
-    movd      [r0+r2*1], m0
-    psrlq     m0, 8
-    movd      [r0+r2*2], m0
-    psrlq     m0, 8
-    movd      [r1+r2*1], m0
-    psrlq     m0, 8
-    movd      [r1+r2*2], m0
-    RET
-
-;------------------------------------------------------------------------------
-; void ff_pred4x4_vertical_left_8_mmxext(uint8_t *src, const uint8_t *topright,
-;                                        ptrdiff_t stride)
-;------------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_vertical_left_8, 3,3
-    sub       r0, r2
-    movq      m1, [r0]
-    punpckldq m1, [r1]
-    movq      m3, m1
-    movq      m2, m1
-    psrlq     m3, 8
-    psrlq     m2, 16
-    movq      m4, m3
-    pavgb     m4, m1
-    PRED4x4_LOWPASS m0, m1, m2, m3, m5
-    lea       r1, [r0+r2*2]
-    movh      [r0+r2*1], m4
-    movh      [r0+r2*2], m0
-    psrlq     m4, 8
-    psrlq     m0, 8
-    movh      [r1+r2*1], m4
-    movh      [r1+r2*2], m0
-    RET
-
-;------------------------------------------------------------------------------
-; void ff_pred4x4_horizontal_up_8_mmxext(uint8_t *src, const uint8_t *topright,
-;                                        ptrdiff_t stride)
-;------------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_horizontal_up_8, 3,3
-    sub       r0, r2
-    lea       r1, [r0+r2*2]
-    movd      m0, [r0+r2*1-4]
-    punpcklbw m0, [r0+r2*2-4]
-    movd      m1, [r1+r2*1-4]
-    punpcklbw m1, [r1+r2*2-4]
-    punpckhwd m0, m1
-    movq      m1, m0
-    punpckhbw m1, m1
-    pshufw    m1, m1, 0xFF
-    punpckhdq m0, m1
-    movq      m2, m0
-    movq      m3, m0
-    movq      m7, m0
-    psrlq     m2, 16
-    psrlq     m3, 8
-    pavgb     m7, m3
-    PRED4x4_LOWPASS m4, m0, m2, m3, m5
-    punpcklbw m7, m4
-    movd    [r0+r2*1], m7
-    psrlq    m7, 16
-    movd    [r0+r2*2], m7
-    psrlq    m7, 16
-    movd    [r1+r2*1], m7
-    movd    [r1+r2*2], m1
-    RET
-
-;------------------------------------------------------------------------------
-; void ff_pred4x4_horizontal_down_8_mmxext(uint8_t *src,
-;                                          const uint8_t *topright,
-;                                          ptrdiff_t stride)
-;------------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_horizontal_down_8, 3,3
-    sub       r0, r2
-    lea       r1, [r0+r2*2]
-    movh      m0, [r0-4]      ; lt ..
-    punpckldq m0, [r0]        ; t3 t2 t1 t0 lt .. .. ..
-    psllq     m0, 8           ; t2 t1 t0 lt .. .. .. ..
-    movd      m1, [r1+r2*2-4] ; l3
-    punpcklbw m1, [r1+r2*1-4] ; l2 l3
-    movd      m2, [r0+r2*2-4] ; l1
-    punpcklbw m2, [r0+r2*1-4] ; l0 l1
-    punpckhwd m1, m2          ; l0 l1 l2 l3
-    punpckhdq m1, m0          ; t2 t1 t0 lt l0 l1 l2 l3
-    movq      m0, m1
-    movq      m2, m1
-    movq      m5, m1
-    psrlq     m0, 16          ; .. .. t2 t1 t0 lt l0 l1
-    psrlq     m2, 8           ; .. t2 t1 t0 lt l0 l1 l2
-    pavgb     m5, m2
-    PRED4x4_LOWPASS m3, m1, m0, m2, m4
-    punpcklbw m5, m3
-    psrlq     m3, 32
-    PALIGNR   m3, m5, 6, m4
-    movh      [r1+r2*2], m5
-    psrlq     m5, 16
-    movh      [r1+r2*1], m5
-    psrlq     m5, 16
-    movh      [r0+r2*2], m5
-    movh      [r0+r2*1], m3
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_pred4x4_vertical_right_8_mmxext(uint8_t *src,
-;                                         const uint8_t *topright,
-;                                         ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_vertical_right_8, 3,3
-    sub     r0, r2
-    lea     r1, [r0+r2*2]
-    movh    m0, [r0]                    ; ........t3t2t1t0
-    movq    m5, m0
-    PALIGNR m0, [r0-8], 7, m1           ; ......t3t2t1t0lt
-    pavgb   m5, m0
-    PALIGNR m0, [r0+r2*1-8], 7, m1      ; ....t3t2t1t0ltl0
-    movq    m1, m0
-    PALIGNR m0, [r0+r2*2-8], 7, m2      ; ..t3t2t1t0ltl0l1
-    movq    m2, m0
-    PALIGNR m0, [r1+r2*1-8], 7, m3      ; t3t2t1t0ltl0l1l2
-    PRED4x4_LOWPASS m3, m1, m0, m2, m4
-    movq    m1, m3
-    psrlq   m3, 16
-    psllq   m1, 48
-    movh    [r0+r2*1], m5
-    movh    [r0+r2*2], m3
-    PALIGNR m5, m1, 7, m2
-    psllq   m1, 8
-    movh    [r1+r2*1], m5
-    PALIGNR m3, m1, 7, m1
-    movh    [r1+r2*2], m3
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_pred4x4_down_right_8_mmxext(uint8_t *src, const uint8_t *topright,
-;                                     ptrdiff_t stride)
-;-----------------------------------------------------------------------------
-
-INIT_MMX mmxext
-cglobal pred4x4_down_right_8, 3,3
-    sub       r0, r2
-    lea       r1, [r0+r2*2]
-    movq      m1, [r1-8]
-    movq      m2, [r0+r2*1-8]
-    punpckhbw m2, [r0-8]
-    movh      m3, [r0]
-    punpckhwd m1, m2
-    PALIGNR   m3, m1, 5, m1
-    movq      m1, m3
-    PALIGNR   m3, [r1+r2*1-8], 7, m4
-    movq      m2, m3
-    PALIGNR   m3, [r1+r2*2-8], 7, m4
-    PRED4x4_LOWPASS m0, m3, m1, m2, m4
-    movh      [r1+r2*2], m0
-    psrlq     m0, 8
-    movh      [r1+r2*1], m0
-    psrlq     m0, 8
-    movh      [r0+r2*2], m0
-    psrlq     m0, 8
-    movh      [r0+r2*1], m0
     RET

@@ -169,34 +169,6 @@ cglobal vp3_h_loop_filter, 3, 4, 6
     paddb  m5, m3
 %endmacro
 
-INIT_MMX mmx
-cglobal put_vp_no_rnd_pixels8_l2, 5, 6, 0, dst, src1, src2, stride, h, stride3
-    mova   m6, [pb_FE]
-    lea    stride3q,[strideq+strideq*2]
-.loop:
-    mova   m0, [src1q]
-    mova   m1, [src2q]
-    mova   m2, [src1q+strideq]
-    mova   m3, [src2q+strideq]
-    PAVGB_NO_RND
-    mova   [dstq], m4
-    mova   [dstq+strideq], m5
-
-    mova   m0, [src1q+strideq*2]
-    mova   m1, [src2q+strideq*2]
-    mova   m2, [src1q+stride3q]
-    mova   m3, [src2q+stride3q]
-    PAVGB_NO_RND
-    mova   [dstq+strideq*2], m4
-    mova   [dstq+stride3q],  m5
-
-    lea    src1q, [src1q+strideq*4]
-    lea    src2q, [src2q+strideq*4]
-    lea    dstq,  [dstq+strideq*4]
-    sub    hd, 4
-    jnz .loop
-    RET
-
 ; from original comments: The Macro does IDct on 4 1-D Dcts
 %macro BeginIDCT 0
     movq          m2, I(3)
@@ -640,21 +612,3 @@ vp3_idct_funcs
     movq   [r0+r1*2], m4
     movq   [r0+r2  ], m5
 %endmacro
-
-INIT_MMX mmxext
-cglobal vp3_idct_dc_add, 3, 4
-    movsx         r3, word [r2]
-    mov    word [r2], 0
-    lea           r2, [r1*3]
-    add           r3, 15
-    sar           r3, 5
-    movd          m0, r3d
-    pshufw        m0, m0, 0x0
-    pxor          m1, m1
-    psubw         m1, m0
-    packuswb      m0, m0
-    packuswb      m1, m1
-    DC_ADD
-    lea           r0, [r0+r1*4]
-    DC_ADD
-    RET

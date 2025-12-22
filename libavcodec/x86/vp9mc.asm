@@ -795,17 +795,6 @@ cglobal vp9_%1%2 %+ %%szsuf, 5, 5, %8, dst, dstride, src, sstride, h
 %define s16 16
 %define d32 32
 %define s32 32
-INIT_MMX mmx
-fpel_fn put, 4,  strideq, strideq*2, stride3q, 4
-fpel_fn put, 8,  strideq, strideq*2, stride3q, 4
-INIT_MMX mmxext
-fpel_fn avg, 4,  strideq, strideq*2, stride3q, 4, 8
-fpel_fn avg, 8,  strideq, strideq*2, stride3q, 4, 8
-INIT_XMM sse
-fpel_fn put, 16, strideq, strideq*2, stride3q, 4
-fpel_fn put, 32, mmsize,  strideq,   strideq+mmsize, 2
-fpel_fn put, 64, mmsize,  mmsize*2,  mmsize*3, 1
-fpel_fn put, 128, mmsize, mmsize*2,  mmsize*3, 1, 0, 8
 INIT_XMM sse2
 fpel_fn avg, 16, strideq, strideq*2, stride3q, 4, 8
 fpel_fn avg, 32, mmsize,  strideq,   strideq+mmsize, 2, 8
@@ -819,8 +808,6 @@ INIT_YMM avx2
 fpel_fn avg, 32, strideq, strideq*2, stride3q, 4, 8
 fpel_fn avg, 64, mmsize,  strideq,   strideq+mmsize, 2, 8
 %endif
-INIT_MMX mmxext
-fpel_fn avg,  8,  strideq, strideq*2, stride3q, 4, 16
 INIT_XMM sse2
 fpel_fn avg,  16, strideq, strideq*2, stride3q, 4, 16
 fpel_fn avg,  32, mmsize,  strideq,   strideq+mmsize, 2, 16
