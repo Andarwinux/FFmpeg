@@ -29,54 +29,6 @@ cextern pw_255
 
 SECTION .text
 
-INIT_XMM sse2
-cglobal add_bytes_l2, 4, 6, 2, dst, src1, src2, wa, w, i
-%if ARCH_X86_64
-    movsxd             waq, wad
-%endif
-    xor                 iq, iq
-
-    ; vector loop
-    mov                 wq, waq
-    and                waq, ~(mmsize*2-1)
-    jmp .end_v
-.loop_v:
-    movu                m0, [src2q+iq]
-    movu                m1, [src2q+iq+mmsize]
-    paddb               m0, [src1q+iq]
-    paddb               m1, [src1q+iq+mmsize]
-    movu  [dstq+iq       ], m0
-    movu  [dstq+iq+mmsize], m1
-    add                 iq, mmsize*2
-.end_v:
-    cmp                 iq, waq
-    jl .loop_v
-
-    ; vector loop
-    mov                waq, wq
-    and                waq, ~7
-    jmp .end_l
-.loop_l:
-    movq               mm0, [src1q+iq]
-    paddb              mm0, [src2q+iq]
-    movq  [dstq+iq       ], mm0
-    add                 iq, 8
-.end_l:
-    cmp                 iq, waq
-    jl .loop_l
-
-    ; scalar loop for leftover
-    jmp .end_s
-.loop_s:
-    mov                wab, [src1q+iq]
-    add                wab, [src2q+iq]
-    mov          [dstq+iq], wab
-    inc                 iq
-.end_s:
-    cmp                 iq, wq
-    jl .loop_s
-    RET
-
 %macro ADD_PAETH_PRED_FN 1
 cglobal add_png_paeth_prediction, 5, 7, %1, dst, src, top, w, bpp, end, cntr
 %if ARCH_X86_64
@@ -151,9 +103,6 @@ cglobal add_png_paeth_prediction, 5, 7, %1, dst, src, top, w, bpp, end, cntr
     dec              cntrq
     jge .bpp_loop
     POP               dstq
-    emms
+    ;emms
     RET
 %endmacro
-
-INIT_MMX ssse3
-ADD_PAETH_PRED_FN 0

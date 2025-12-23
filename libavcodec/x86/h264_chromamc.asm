@@ -380,18 +380,3 @@ cglobal %1_%2_chroma_mc4, 6, 7+UNIX64, 8
     jmp           ..@%1_h264_chroma_mc4_after_init_ %+ cpuname
 %endif
 %endmacro
-
-INIT_XMM ssse3
-%define CHROMAMC_AVG NOTHING
-chroma_mc8_ssse3_func put, h264, _rnd
-chroma_mc8_ssse3_func put, vc1,  _nornd
-rv40_chroma_mc8_func put
-chroma_mc4_ssse3_func put, h264
-rv40_chroma_mc4_func put
-
-%define CHROMAMC_AVG DIRECT_AVG
-chroma_mc8_ssse3_func avg, h264, _rnd
-chroma_mc8_ssse3_func avg, vc1,  _nornd
-rv40_chroma_mc8_func avg
-chroma_mc4_ssse3_func avg, h264
-rv40_chroma_mc4_func avg
