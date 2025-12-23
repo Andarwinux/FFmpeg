@@ -322,59 +322,6 @@ cglobal deblock_v_luma_8, 5,5,10, pix_, stride_, alpha_, beta_, base3_
     mova    [base3_q + 2*stride_q], m1
     mova    [pix_q], m2
     RET
-
-;-----------------------------------------------------------------------------
-; void ff_deblock_h_luma(uint8_t *pix, int stride, int alpha, int beta,
-;                        int8_t *tc0)
-;-----------------------------------------------------------------------------
-INIT_MMX cpuname
-cglobal deblock_h_luma_8, 5,9,0,0x60+16*WIN64
-    movsxd r7,  r1d
-    lea    r8,  [r7+r7*2]
-    lea    r6,  [r0-4]
-    lea    r5,  [r0-4+r8]
-%if WIN64
-    %define pix_tmp rsp+0x30 ; shadow space + r4
-%else
-    %define pix_tmp rsp
-%endif
-
-    ; transpose 6x16 -> tmp space
-    TRANSPOSE6x8_MEM  PASS8ROWS(r6, r5, r7, r8), pix_tmp
-    lea    r6, [r6+r7*8]
-    lea    r5, [r5+r7*8]
-    TRANSPOSE6x8_MEM  PASS8ROWS(r6, r5, r7, r8), pix_tmp+8
-
-    ; vertical filter
-    ; alpha, beta, tc0 are still in r2d, r3d, r4
-    ; don't backup r6, r5, r7, r8 because deblock_v_luma_sse2 doesn't use them
-    lea    r0, [pix_tmp+0x30]
-    mov    r1d, 0x10
-%if WIN64
-    mov    [rsp+0x20], r4
-%endif
-    call   deblock_v_luma_8
-
-    ; transpose 16x4 -> original space  (only the middle 4 rows were changed by the filter)
-    add    r6, 2
-    add    r5, 2
-    movq   m0, [pix_tmp+0x18]
-    movq   m1, [pix_tmp+0x28]
-    movq   m2, [pix_tmp+0x38]
-    movq   m3, [pix_tmp+0x48]
-    TRANSPOSE8x4B_STORE  PASS8ROWS(r6, r5, r7, r8)
-
-    shl    r7,  3
-    sub    r6,  r7
-    sub    r5,  r7
-    shr    r7,  3
-    movq   m0, [pix_tmp+0x10]
-    movq   m1, [pix_tmp+0x20]
-    movq   m2, [pix_tmp+0x30]
-    movq   m3, [pix_tmp+0x40]
-    TRANSPOSE8x4B_STORE  PASS8ROWS(r6, r5, r7, r8)
-
-    RET
 %endmacro
 
 %macro DEBLOCK_H_LUMA_MBAFF 0
@@ -523,61 +470,6 @@ cglobal deblock_%1_luma_8, 5,5,8,2*%2
     DEBLOCK_P0_Q0
     mova    [r4+2*r1], m1
     mova    [r0], m2
-    RET
-
-;-----------------------------------------------------------------------------
-; void ff_deblock_h_luma(uint8_t *pix, int stride, int alpha, int beta,
-;                        int8_t *tc0)
-;-----------------------------------------------------------------------------
-INIT_MMX cpuname
-cglobal deblock_h_luma_8, 0,5,8,0x60+12
-    mov    r0, r0mp
-    mov    r3, r1m
-    lea    r4, [r3*3]
-    sub    r0, 4
-    lea    r1, [r0+r4]
-%define pix_tmp esp+12
-
-    ; transpose 6x16 -> tmp space
-    TRANSPOSE6x8_MEM  PASS8ROWS(r0, r1, r3, r4), pix_tmp
-    lea    r0, [r0+r3*8]
-    lea    r1, [r1+r3*8]
-    TRANSPOSE6x8_MEM  PASS8ROWS(r0, r1, r3, r4), pix_tmp+8
-
-    ; vertical filter
-    lea    r0, [pix_tmp+0x30]
-    PUSH   dword r4m
-    PUSH   dword r3m
-    PUSH   dword r2m
-    PUSH   dword 16
-    PUSH   dword r0
-    call   deblock_%1_luma_8
-%ifidn %1, v8
-    add    dword [esp   ], 8 ; pix_tmp+0x38
-    add    dword [esp+16], 2 ; tc0+2
-    call   deblock_%1_luma_8
-%endif
-    ADD    esp, 20
-
-    ; transpose 16x4 -> original space  (only the middle 4 rows were changed by the filter)
-    mov    r0, r0mp
-    sub    r0, 2
-
-    movq   m0, [pix_tmp+0x10]
-    movq   m1, [pix_tmp+0x20]
-    lea    r1, [r0+r4]
-    movq   m2, [pix_tmp+0x30]
-    movq   m3, [pix_tmp+0x40]
-    TRANSPOSE8x4B_STORE  PASS8ROWS(r0, r1, r3, r4)
-
-    lea    r0, [r0+r3*8]
-    lea    r1, [r1+r3*8]
-    movq   m0, [pix_tmp+0x18]
-    movq   m1, [pix_tmp+0x28]
-    movq   m2, [pix_tmp+0x38]
-    movq   m3, [pix_tmp+0x48]
-    TRANSPOSE8x4B_STORE  PASS8ROWS(r0, r1, r3, r4)
-
     RET
 %endmacro ; DEBLOCK_LUMA
 
@@ -781,79 +673,6 @@ cglobal deblock_%1_luma_intra_8, 4,6,16,ARCH_X86_64*0x50-0x50
     LUMA_INTRA_P012 [r0], [r0+r1], [r0+2*r1], [r0+r5]
 .end:
     RET
-
-INIT_MMX cpuname
-%if ARCH_X86_64
-;-----------------------------------------------------------------------------
-; void ff_deblock_h_luma_intra(uint8_t *pix, int stride, int alpha, int beta)
-;-----------------------------------------------------------------------------
-cglobal deblock_h_luma_intra_8, 4,9,0,0x80
-    movsxd r7,  r1d
-    lea    r8,  [r7*3]
-    lea    r6,  [r0-4]
-    lea    r5,  [r0-4+r8]
-%if WIN64
-    %define pix_tmp rsp+0x20 ; shadow space
-%else
-    %define pix_tmp rsp
-%endif
-
-    ; transpose 8x16 -> tmp space
-    TRANSPOSE8x8_MEM  PASS8ROWS(r6, r5, r7, r8), PASS8ROWS(pix_tmp, pix_tmp+0x30, 0x10, 0x30)
-    lea    r6, [r6+r7*8]
-    lea    r5, [r5+r7*8]
-    TRANSPOSE8x8_MEM  PASS8ROWS(r6, r5, r7, r8), PASS8ROWS(pix_tmp+8, pix_tmp+0x38, 0x10, 0x30)
-
-    lea    r0,  [pix_tmp+0x40]
-    mov    r1,  0x10
-    call   deblock_v_luma_intra_8
-
-    ; transpose 16x6 -> original space (but we can't write only 6 pixels, so really 16x8)
-    lea    r5, [r6+r8]
-    TRANSPOSE8x8_MEM  PASS8ROWS(pix_tmp+8, pix_tmp+0x38, 0x10, 0x30), PASS8ROWS(r6, r5, r7, r8)
-    shl    r7,  3
-    sub    r6,  r7
-    sub    r5,  r7
-    shr    r7,  3
-    TRANSPOSE8x8_MEM  PASS8ROWS(pix_tmp, pix_tmp+0x30, 0x10, 0x30), PASS8ROWS(r6, r5, r7, r8)
-    RET
-%else
-cglobal deblock_h_luma_intra_8, 2,4,8,0x80
-    lea    r3,  [r1*3]
-    sub    r0,  4
-    lea    r2,  [r0+r3]
-    %define pix_tmp rsp
-
-    ; transpose 8x16 -> tmp space
-    TRANSPOSE8x8_MEM  PASS8ROWS(r0, r2, r1, r3), PASS8ROWS(pix_tmp, pix_tmp+0x30, 0x10, 0x30)
-    lea    r0,  [r0+r1*8]
-    lea    r2,  [r2+r1*8]
-    TRANSPOSE8x8_MEM  PASS8ROWS(r0, r2, r1, r3), PASS8ROWS(pix_tmp+8, pix_tmp+0x38, 0x10, 0x30)
-
-    lea    r0,  [pix_tmp+0x40]
-    PUSH   dword r3m
-    PUSH   dword r2m
-    PUSH   dword 16
-    PUSH   r0
-    call   deblock_%1_luma_intra_8
-%ifidn %1, v8
-    add    dword [rsp], 8 ; pix_tmp+8
-    call   deblock_%1_luma_intra_8
-%endif
-    ADD    esp, 16
-
-    mov    r1,  r1m
-    mov    r0,  r0mp
-    lea    r3,  [r1*3]
-    sub    r0,  4
-    lea    r2,  [r0+r3]
-    ; transpose 16x6 -> original space (but we can't write only 6 pixels, so really 16x8)
-    TRANSPOSE8x8_MEM  PASS8ROWS(pix_tmp, pix_tmp+0x30, 0x10, 0x30), PASS8ROWS(r0, r2, r1, r3)
-    lea    r0,  [r0+r1*8]
-    lea    r2,  [r2+r1*8]
-    TRANSPOSE8x8_MEM  PASS8ROWS(pix_tmp+8, pix_tmp+0x38, 0x10, 0x30), PASS8ROWS(r0, r2, r1, r3)
-    RET
-%endif ; ARCH_X86_64
 %endmacro ; DEBLOCK_LUMA_INTRA
 
 INIT_XMM sse2

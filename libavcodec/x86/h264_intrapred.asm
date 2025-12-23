@@ -127,11 +127,6 @@ cglobal pred16x16_dc_8, 2,7
     RET
 %endmacro
 
-INIT_XMM sse2
-PRED16x16_DC
-INIT_XMM ssse3
-PRED16x16_DC
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred16x16_tm_vp8_8(uint8_t *src, ptrdiff_t stride)
 ;-----------------------------------------------------------------------------
@@ -580,9 +575,6 @@ cglobal pred8x8_horizontal_8, 2,3
     RET
 %endmacro
 
-INIT_MMX ssse3
-PRED8x8_H
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8_tm_vp8_8(uint8_t *src, ptrdiff_t stride)
 ;-----------------------------------------------------------------------------
@@ -706,9 +698,6 @@ cglobal pred8x8l_top_dc_8, 4,4
     RET
 %endmacro
 
-INIT_MMX ssse3
-PRED8x8L_TOP_DC
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_dc_8(uint8_t *src, int has_topleft, int has_topright,
 ;                       ptrdiff_t stride)
@@ -808,9 +797,6 @@ cglobal pred8x8l_dc_8, 4,5
     RET
 %endmacro
 
-INIT_MMX ssse3
-PRED8x8L_DC
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_horizontal_8(uint8_t *src, int has_topleft,
 ;                               int has_topright, ptrdiff_t stride)
@@ -878,9 +864,6 @@ cglobal pred8x8l_horizontal_8, 4,4
     RET
 %endmacro
 
-INIT_MMX ssse3
-PRED8x8L_HORIZONTAL
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_vertical_8(uint8_t *src, int has_topleft, int has_topright,
 ;                             ptrdiff_t stride)
@@ -926,9 +909,6 @@ cglobal pred8x8l_vertical_8, 4,4
     movq [r0+r3*2], mm0
     RET
 %endmacro
-
-INIT_MMX ssse3
-PRED8x8L_VERTICAL
 
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_down_left_8(uint8_t *src, int has_topleft,
@@ -1017,11 +997,6 @@ INIT_XMM cpuname
     movq [r0+r3*2], xmm0
     RET
 %endmacro
-
-INIT_MMX sse2
-PRED8x8L_DOWN_LEFT
-INIT_MMX ssse3
-PRED8x8L_DOWN_LEFT
 
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_down_right_8(uint8_t *src, int has_topleft,
@@ -1138,11 +1113,6 @@ INIT_XMM cpuname
     RET
 %endmacro
 
-INIT_MMX sse2
-PRED8x8L_DOWN_RIGHT
-INIT_MMX ssse3
-PRED8x8L_DOWN_RIGHT
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_vertical_right_8(uint8_t *src, int has_topleft,
 ;                                   int has_topright, ptrdiff_t stride)
@@ -1256,11 +1226,6 @@ INIT_XMM cpuname
     RET
 %endmacro
 
-INIT_MMX sse2
-PRED8x8L_VERTICAL_RIGHT
-INIT_MMX ssse3
-PRED8x8L_VERTICAL_RIGHT
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_vertical_left_8(uint8_t *src, int has_topleft,
 ;                                  int has_topright, ptrdiff_t stride)
@@ -1346,11 +1311,6 @@ INIT_XMM cpuname
     RET
 %endmacro
 
-INIT_MMX sse2
-PRED8x8L_VERTICAL_LEFT
-INIT_MMX ssse3
-PRED8x8L_VERTICAL_LEFT
-
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_horizontal_up_8(uint8_t *src, int has_topleft,
 ;                                  int has_topright, ptrdiff_t stride)
@@ -1433,9 +1393,6 @@ cglobal pred8x8l_horizontal_up_8, 4,4
     movq [r0+r3*2], mm3
     RET
 %endmacro
-
-INIT_MMX ssse3
-PRED8x8L_HORIZONTAL_UP
 
 ;-----------------------------------------------------------------------------
 ; void ff_pred8x8l_horizontal_down_8(uint8_t *src, int has_topleft,
@@ -1565,41 +1522,3 @@ INIT_XMM cpuname
     movq   [r4+r3*1], xmm0
     RET
 %endmacro
-
-INIT_MMX sse2
-PRED8x8L_HORIZONTAL_DOWN
-INIT_MMX ssse3
-PRED8x8L_HORIZONTAL_DOWN
-
-INIT_XMM ssse3
-cglobal pred4x4_tm_vp8_8, 3,3
-    sub         r0, r2
-    movq       mm6, [tm_shuf]
-    pxor       mm1, mm1
-    movd       mm0, [r0]
-    punpcklbw  mm0, mm1
-    movd       mm7, [r0-4]
-    pshufb     mm7, mm6
-    lea         r1, [r0+r2*2]
-    movd       mm2, [r0+r2*1-4]
-    movd       mm3, [r0+r2*2-4]
-    movd       mm4, [r1+r2*1-4]
-    movd       mm5, [r1+r2*2-4]
-    pshufb     mm2, mm6
-    pshufb     mm3, mm6
-    pshufb     mm4, mm6
-    pshufb     mm5, mm6
-    psubw      mm0, mm7
-    paddw      mm2, mm0
-    paddw      mm3, mm0
-    paddw      mm4, mm0
-    paddw      mm5, mm0
-    packuswb   mm2, mm2
-    packuswb   mm3, mm3
-    packuswb   mm4, mm4
-    packuswb   mm5, mm5
-    movd [r0+r2*1], mm2
-    movd [r0+r2*2], mm3
-    movd [r1+r2*1], mm4
-    movd [r1+r2*2], mm5
-    RET

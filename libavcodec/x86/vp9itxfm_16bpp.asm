@@ -238,47 +238,6 @@ cglobal vp9_iwht_iwht_4x4_add_%1, 3, 3, 8, dst, stride, block, eob
 ; 4x4 coefficients are 5+depth+sign bits, so for 10bpp, everything still fits
 ; in 15+1 words without additional effort, since the coefficients are 15bpp.
 
-INIT_MMX ssse3
-cglobal vp9_idct_idct_4x4_add_10, 4, 4, 8, dst, stride, block, eob
-    cmp               eobd, 1
-    jg .idctfull
-
-    ; dc-only
-    pxor                m4, m4
-    movd                m0, [blockq]
-    movd          [blockq], m4
-    mova                m5, [pw_11585x2]
-    pmulhrsw            m0, m5
-    pmulhrsw            m0, m5
-    pshufw              m0, m0, 0
-    mova                m5, [pw_1023]
-    pmulhrsw            m0, [pw_2048]       ; (x*2048 + (1<<14))>>15 <=> (x+8)>>4
-    VP9_STORE_2X         0,  0,  6,  7,  4,  5
-    lea               dstq, [dstq+2*strideq]
-    VP9_STORE_2X         0,  0,  6,  7,  4,  5
-    RET
-
-.idctfull:
-    mova                m0, [blockq+0*16+0]
-    mova                m1, [blockq+1*16+0]
-    packssdw            m0, [blockq+0*16+8]
-    packssdw            m1, [blockq+1*16+8]
-    mova                m2, [blockq+2*16+0]
-    mova                m3, [blockq+3*16+0]
-    packssdw            m2, [blockq+2*16+8]
-    packssdw            m3, [blockq+3*16+8]
-
-    mova                m6, [pw_11585x2]
-    mova                m7, [pd_8192]       ; rounding
-    VP9_IDCT4_1D
-    TRANSPOSE4x4W  0, 1, 2, 3, 4
-    VP9_IDCT4_1D
-
-    pxor                m4, m4
-    ZERO_BLOCK      blockq, 16, 4, m4
-    VP9_IDCT4_WRITEOUT
-    RET
-
 %macro IADST4_FN 4
 cglobal vp9_%1_%3_4x4_add_10, 3, 3, 0, dst, stride, block, eob
 %if WIN64 && notcpuflag(ssse3)
@@ -311,16 +270,6 @@ INIT_MMX cpuname
     VP9_IDCT4_WRITEOUT
     RET
 %endmacro
-
-INIT_MMX sse2
-IADST4_FN idct,  IDCT4,  iadst, IADST4
-IADST4_FN iadst, IADST4, idct,  IDCT4
-IADST4_FN iadst, IADST4, iadst, IADST4
-
-INIT_MMX ssse3
-IADST4_FN idct,  IDCT4,  iadst, IADST4
-IADST4_FN iadst, IADST4, idct,  IDCT4
-IADST4_FN iadst, IADST4, iadst, IADST4
 
 ; inputs and outputs are dwords, coefficients are words
 ;

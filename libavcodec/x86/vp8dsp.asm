@@ -790,8 +790,6 @@ cglobal put_vp8_bilinear%1_h, 6, 6 + npicregs, 7, dst, dststride, src, srcstride
 
 INIT_XMM sse2
 FILTER_BILINEAR 8
-INIT_MMX ssse3
-FILTER_BILINEAR 4
 INIT_XMM ssse3
 FILTER_BILINEAR 8
 

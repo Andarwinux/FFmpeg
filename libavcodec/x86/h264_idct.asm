@@ -252,61 +252,6 @@ cglobal h264_idct8_add_8, 3, 4, 10
     %1    [%2+%4  ], m5
 %endmacro
 
-INIT_XMM sse2
-; void ff_h264_idct8_add4_8_sse2(uint8_t *dst, const int *block_offset,
-;                                int16_t *block, int stride,
-;                                const uint8_t nnzc[6 * 8])
-cglobal h264_idct8_add4_8, 5, 8 + npicregs, 10, dst1, block_offset, block, stride, nnzc, cntr, coeff, dst2, picreg
-    movsxdifnidn r3, r3d
-    xor          r5, r5
-%if PIC
-    lea     picregq, [scan8_mem]
-%endif
-.nextblock:
-    movzx        r6, byte [scan8+r5]
-    movzx        r6, byte [r4+r6]
-    test         r6, r6
-    jz .skipblock
-    cmp          r6, 1
-    jnz .no_dc
-    movsx        r6, word [r2]
-    test         r6, r6
-    jz .no_dc
-INIT_MMX cpuname
-    mov   word [r2], 0
-    DC_ADD_MMXEXT_INIT r6, r3
-%if ARCH_X86_64 == 0
-%define dst2q r1
-%define dst2d r1d
-%endif
-    mov       dst2d, dword [r1+r5*4]
-    add       dst2q, r0
-    DC_ADD_MMXEXT_OP mova, dst2q, r3, r6
-    lea       dst2q, [dst2q+r3*4]
-    DC_ADD_MMXEXT_OP mova, dst2q, r3, r6
-%if ARCH_X86_64 == 0
-    mov          r1, r1m
-%endif
-    add          r5, 4
-    add          r2, 128
-    cmp          r5, 16
-    jl .nextblock
-    RET
-.no_dc:
-INIT_XMM cpuname
-    mov       dst2d, dword [r1+r5*4]
-    add       dst2q, r0
-    IDCT8_ADD_SSE dst2q, r2, r3, r6
-%if ARCH_X86_64 == 0
-    mov          r1, r1m
-%endif
-.skipblock:
-    add          r5, 4
-    add          r2, 128
-    cmp          r5, 16
-    jl .nextblock
-    RET
-
 ALIGN 16
 INIT_XMM sse2
 ; r0 = uint8_t *dst (clobbered), r2 = int16_t *block, r3 = ptrdiff_t stride
