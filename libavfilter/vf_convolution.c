@@ -778,7 +778,7 @@ static int param_init(AVFilterContext *ctx)
     }
 
     if (!strcmp(ctx->filter->name, "convolution")) {
-#if CONFIG_CONVOLUTION_FILTER && ARCH_X86_64 && HAVE_X86ASM
+#if CONFIG_CONVOLUTION_FILTER && ARCH_X86_64 && HAVE_X86ASM && 0
         ff_convolution_init_x86(s);
 #endif
     } else if (!strcmp(ctx->filter->name, "prewitt")) {

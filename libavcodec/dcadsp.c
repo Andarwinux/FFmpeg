@@ -489,7 +489,7 @@ av_cold void ff_dcadsp_init(DCADSPContext *s)
 
 #if ARCH_AARCH64
     ff_dcadsp_init_aarch64(s);
-#elif ARCH_X86 && HAVE_X86ASM
+#elif ARCH_X86 && HAVE_X86ASM && 0
     ff_dcadsp_init_x86(s);
 #endif
 }
