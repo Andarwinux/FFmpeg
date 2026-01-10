@@ -81,7 +81,7 @@ static inline void ff_fsppdsp_init(FSPPDSPContext *fspp)
     fspp->row_idct     = ff_row_idct_c;
     fspp->row_fdct     = ff_row_fdct_c;
 
-#if ARCH_X86 && HAVE_X86ASM
+#if ARCH_X86 && HAVE_X86ASM && 0
     ff_fsppdsp_init_x86(fspp);
 #endif
 }

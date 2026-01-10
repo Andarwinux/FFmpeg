@@ -116,7 +116,7 @@ void ff_anlmdn_init(AudioNLMDNDSPContext *dsp)
     dsp->compute_distance_ssd = compute_distance_ssd_c;
     dsp->compute_cache        = compute_cache_c;
 
-#if ARCH_X86 && HAVE_X86ASM
+#if ARCH_X86 && HAVE_X86ASM && 0
     ff_anlmdn_init_x86(dsp);
 #endif
 }
