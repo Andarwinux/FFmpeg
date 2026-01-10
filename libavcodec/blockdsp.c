@@ -69,7 +69,7 @@ av_cold void ff_blockdsp_init(BlockDSPContext *c)
     ff_blockdsp_init_ppc(c);
 #elif ARCH_RISCV
     ff_blockdsp_init_riscv(c);
-#elif ARCH_X86 && HAVE_X86ASM
+#elif ARCH_X86 && HAVE_X86ASM && 0
     ff_blockdsp_init_x86(c);
 #elif ARCH_MIPS
     ff_blockdsp_init_mips(c);

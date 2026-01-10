@@ -64,6 +64,7 @@ av_cold void ff_flacdsp_init_x86(FLACDSPContext *c, enum AVSampleFormat fmt, int
 {
     int cpu_flags = av_get_cpu_flags();
 
+    /*
     if (EXTERNAL_SSE2(cpu_flags)) {
         c->wasted32 = ff_flac_wasted_32_sse2;
         if (fmt == AV_SAMPLE_FMT_S16) {
@@ -76,6 +77,7 @@ av_cold void ff_flacdsp_init_x86(FLACDSPContext *c, enum AVSampleFormat fmt, int
             c->decorrelate[3] = ff_flac_decorrelate_ms_32_sse2;
         }
     }
+    */
     if (EXTERNAL_SSSE3(cpu_flags)) {
         if (fmt == AV_SAMPLE_FMT_S16) {
             if (channels == 2)
@@ -101,11 +103,13 @@ av_cold void ff_flacdsp_init_x86(FLACDSPContext *c, enum AVSampleFormat fmt, int
 #endif
         }
     }
+    /*
     if (EXTERNAL_SSE4(cpu_flags)) {
         c->lpc16 = ff_flac_lpc_16_sse4;
         c->lpc32 = ff_flac_lpc_32_sse4;
         c->wasted33 = ff_flac_wasted_33_sse4;
     }
+    */
     if (EXTERNAL_AVX(cpu_flags)) {
         if (fmt == AV_SAMPLE_FMT_S16) {
 #if ARCH_X86_64

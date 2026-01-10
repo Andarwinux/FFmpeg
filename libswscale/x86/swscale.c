@@ -448,7 +448,6 @@ INPUT_PLANAR_RGB_A_ALL_DECL(avx2);
 
 #define RANGE_CONVERT_FUNCS(opt, bpc) do {                                  \
     if (c->opts.src_range) {                                                \
-        c->lumConvertRange = ff_lumRangeFromJpeg##bpc##_##opt;              \
         c->chrConvertRange = ff_chrRangeFromJpeg##bpc##_##opt;              \
     } else {                                                                \
         c->lumConvertRange = ff_lumRangeToJpeg##bpc##_##opt;                \

@@ -363,7 +363,7 @@ void ff_ac3dsp_downmix(AC3DSPContext *c, float **samples, float **matrix,
             c->downmix = ac3_downmix_5_to_1_symmetric_c;
         }
 
-#if ARCH_X86 && HAVE_X86ASM
+#if ARCH_X86 && HAVE_X86ASM && 0
         ff_ac3dsp_set_downmix_x86(c);
 #endif
     }
