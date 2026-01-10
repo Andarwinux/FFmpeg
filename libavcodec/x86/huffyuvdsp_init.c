@@ -37,15 +37,16 @@ av_cold void ff_huffyuvdsp_init_x86(HuffYUVDSPContext *c)
     int cpu_flags = av_get_cpu_flags();
 
     if (EXTERNAL_SSE2(cpu_flags)) {
-        c->add_int16 = ff_add_int16_sse2;
+        //c->add_int16 = ff_add_int16_sse2;
         c->add_hfyu_left_pred_bgr32 = ff_add_hfyu_left_pred_bgr32_sse2;
     }
 
     if (EXTERNAL_SSE4(cpu_flags)) {
         c->add_hfyu_median_pred_int16 = ff_add_hfyu_median_pred_int16_sse4;
     }
-
+    /*
     if (EXTERNAL_AVX2_FAST(cpu_flags)) {
         c->add_int16 = ff_add_int16_avx2;
     }
+    */
 }
