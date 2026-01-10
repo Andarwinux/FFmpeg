@@ -2436,9 +2436,10 @@ av_cold void rgb2rgb_init_x86(void)
 #if ARCH_X86_64
         uyvytoyuv422 = ff_uyvytoyuv422_sse2;
 #endif
-        deinterleaveBytes = deinterleave_bytes_sse2;
+        //deinterleaveBytes = deinterleave_bytes_sse2;
     }
 #endif
+    /*
     if (EXTERNAL_SSSE3(cpu_flags)) {
         shuffle_bytes_0321 = ff_shuffle_bytes_0321_ssse3;
         shuffle_bytes_2103 = ff_shuffle_bytes_2103_ssse3;
@@ -2450,12 +2451,14 @@ av_cold void rgb2rgb_init_x86(void)
         shuffle_bytes_2130 = ff_shuffle_bytes_2130_ssse3;
         shuffle_bytes_1203 = ff_shuffle_bytes_1203_ssse3;
     }
+    */
 #if HAVE_AVX_EXTERNAL
     if (EXTERNAL_AVX(cpu_flags)) {
-        deinterleaveBytes = deinterleave_bytes_avx;
+        //deinterleaveBytes = deinterleave_bytes_avx;
 #if ARCH_X86_64
         uyvytoyuv422 = ff_uyvytoyuv422_avx;
     }
+    /*
     if (EXTERNAL_AVX2_FAST(cpu_flags)) {
         shuffle_bytes_0321 = ff_shuffle_bytes_0321_avx2;
         shuffle_bytes_2103 = ff_shuffle_bytes_2103_avx2;
@@ -2478,6 +2481,7 @@ av_cold void rgb2rgb_init_x86(void)
         shuffle_bytes_2130 = ff_shuffle_bytes_2130_avx512icl;
         shuffle_bytes_1203 = ff_shuffle_bytes_1203_avx512icl;
     }
+    */
     if (EXTERNAL_AVX2_FAST(cpu_flags)) {
         uyvytoyuv422 = ff_uyvytoyuv422_avx2;
     }
