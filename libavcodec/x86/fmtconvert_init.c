@@ -36,7 +36,7 @@ av_cold void ff_fmt_convert_init_x86(FmtConvertContext *c)
     int cpu_flags = av_get_cpu_flags();
 
     if (EXTERNAL_SSE2(cpu_flags)) {
-        c->int32_to_float_fmul_scalar = ff_int32_to_float_fmul_scalar_sse2;
+        //c->int32_to_float_fmul_scalar = ff_int32_to_float_fmul_scalar_sse2;
         c->int32_to_float_fmul_array8 = ff_int32_to_float_fmul_array8_sse2;
     }
 }
