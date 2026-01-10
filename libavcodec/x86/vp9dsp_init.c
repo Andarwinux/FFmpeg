@@ -361,10 +361,12 @@ av_cold void ff_vp9dsp_init_x86(VP9DSPContext *dsp, int bpp, int bitexact)
         init_dir_tm_h_ipred(16, avx);
         init_dir_tm_h_ipred(32, avx);
     }
+    /*
     if (EXTERNAL_AVX_FAST(cpu_flags)) {
         init_fpel_func(1, 0, 32, put, , avx);
         init_fpel_func(0, 0, 64, put, , avx);
     }
+    */
 
     if (EXTERNAL_AVX2_FAST(cpu_flags)) {
         init_fpel_func(1, 1, 32, avg, _8, avx2);

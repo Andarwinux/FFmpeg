@@ -228,7 +228,7 @@ av_cold void ff_h264dsp_init_x86(H264DSPContext *c, const int bit_depth,
             //c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_8_sse2;
 
 #if ARCH_X86_64
-            c->h_loop_filter_luma_mbaff = ff_deblock_h_luma_mbaff_8_sse2;
+            //c->h_loop_filter_luma_mbaff = ff_deblock_h_luma_mbaff_8_sse2;
 #endif
 
             c->v_loop_filter_chroma       = ff_deblock_v_chroma_8_sse2;
@@ -254,7 +254,7 @@ av_cold void ff_h264dsp_init_x86(H264DSPContext *c, const int bit_depth,
             c->v_loop_filter_luma_intra = ff_deblock_v_luma_intra_8_avx;
             //c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_8_avx;
 #if ARCH_X86_64
-            c->h_loop_filter_luma_mbaff = ff_deblock_h_luma_mbaff_8_avx;
+            //c->h_loop_filter_luma_mbaff = ff_deblock_h_luma_mbaff_8_avx;
 #endif
 
             c->v_loop_filter_chroma       = ff_deblock_v_chroma_8_avx;
@@ -306,9 +306,9 @@ av_cold void ff_h264dsp_init_x86(H264DSPContext *c, const int bit_depth,
                 c->h_loop_filter_chroma = ff_deblock_h_chroma422_10_sse2;
             }
             c->v_loop_filter_luma       = ff_deblock_v_luma_10_sse2;
-            c->h_loop_filter_luma       = ff_deblock_h_luma_10_sse2;
+            //c->h_loop_filter_luma       = ff_deblock_h_luma_10_sse2;
             c->v_loop_filter_luma_intra = ff_deblock_v_luma_intra_10_sse2;
-            c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_10_sse2;
+            //c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_10_sse2;
         }
         if (EXTERNAL_SSE4(cpu_flags)) {
             c->weight_pixels_tab[0] = ff_h264_weight_16_10_sse4;
@@ -344,9 +344,9 @@ av_cold void ff_h264dsp_init_x86(H264DSPContext *c, const int bit_depth,
                 c->h_loop_filter_chroma = ff_deblock_h_chroma422_10_avx;
             }
             c->v_loop_filter_luma         = ff_deblock_v_luma_10_avx;
-            c->h_loop_filter_luma         = ff_deblock_h_luma_10_avx;
+            //c->h_loop_filter_luma         = ff_deblock_h_luma_10_avx;
             c->v_loop_filter_luma_intra   = ff_deblock_v_luma_intra_10_avx;
-            c->h_loop_filter_luma_intra   = ff_deblock_h_luma_intra_10_avx;
+            //c->h_loop_filter_luma_intra   = ff_deblock_h_luma_intra_10_avx;
         }
     }
 }

@@ -93,12 +93,15 @@ av_cold void ff_float_dsp_init_x86(AVFloatDSPContext *fdsp)
         fdsp->butterflies_float   = ff_butterflies_float_sse;
     }
     if (EXTERNAL_SSE2(cpu_flags)) {
+        /*
         fdsp->vector_dmul = ff_vector_dmul_sse2;
         fdsp->vector_dmac_scalar = ff_vector_dmac_scalar_sse2;
         fdsp->vector_dmul_scalar = ff_vector_dmul_scalar_sse2;
+        */
         fdsp->scalarproduct_double = ff_scalarproduct_double_sse2;
     }
     if (EXTERNAL_AVX_FAST(cpu_flags)) {
+        /*
         fdsp->vector_fmul = ff_vector_fmul_avx;
         fdsp->vector_dmul = ff_vector_dmul_avx;
         fdsp->vector_fmac_scalar = ff_vector_fmac_scalar_avx;
@@ -106,15 +109,20 @@ av_cold void ff_float_dsp_init_x86(AVFloatDSPContext *fdsp)
         fdsp->vector_dmac_scalar = ff_vector_dmac_scalar_avx;
         fdsp->vector_fmul_add    = ff_vector_fmul_add_avx;
         fdsp->vector_fmul_reverse = ff_vector_fmul_reverse_avx;
+        */
         fdsp->scalarproduct_double = ff_scalarproduct_double_avx;
     }
+    /*
     if (EXTERNAL_AVX2_FAST(cpu_flags)) {
         fdsp->vector_fmul_reverse = ff_vector_fmul_reverse_avx2;
     }
+    */
     if (EXTERNAL_FMA3_FAST(cpu_flags)) {
+        /*
         fdsp->vector_fmac_scalar = ff_vector_fmac_scalar_fma3;
         fdsp->vector_fmul_add    = ff_vector_fmul_add_fma3;
         fdsp->vector_dmac_scalar = ff_vector_dmac_scalar_fma3;
+        */
         fdsp->scalarproduct_float = ff_scalarproduct_float_fma3;
     }
 }

@@ -355,7 +355,7 @@ av_cold int ff_lpc_init(LPCContext *s, int blocksize, int max_order,
 
 #if ARCH_RISCV
     ff_lpc_init_riscv(s);
-#elif ARCH_X86
+#elif ARCH_X86 && 0
     ff_lpc_init_x86(s);
 #endif
 
