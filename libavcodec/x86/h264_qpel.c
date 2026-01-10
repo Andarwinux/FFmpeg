@@ -447,10 +447,12 @@ av_cold void ff_h264qpel_init_x86(H264QpelContext *c, int bit_depth)
             H264_QPEL_FUNCS(3, 3, ssse3);
         }
 
+        /*
         if (bit_depth == 10) {
             H264_QPEL_FUNCS_10(1, 0, ssse3_cache64);
             H264_QPEL_FUNCS_10(2, 0, ssse3_cache64);
             H264_QPEL_FUNCS_10(3, 0, ssse3_cache64);
         }
+        */
     }
 }
