@@ -114,7 +114,7 @@ av_cold void ff_mpeg4videodsp_init(Mpeg4VideoDSPContext *c)
 
 #if ARCH_PPC
     ff_mpeg4videodsp_init_ppc(c);
-#elif ARCH_X86
+#elif ARCH_X86 && 0
     ff_mpeg4videodsp_init_x86(c);
 #endif
 }
