@@ -89,7 +89,7 @@ static void repack(AVCodecContext *avctx, uint8_t *dst, const uint8_t *src,
         break;
     case AV_CODEC_ID_DSD_LSBF:
         for (int i = 0; i < nb_samples * channels; i++)
-            dst[i] = ff_reverse[src[i]];
+            dst[i] = ff_reverse(src[i]);
         break;
     case AV_CODEC_ID_DSD_MSBF_PLANAR:
         for (int ch = 0; ch < channels; ch++) {
@@ -102,7 +102,7 @@ static void repack(AVCodecContext *avctx, uint8_t *dst, const uint8_t *src,
         for (int ch = 0; ch < channels; ch++) {
             const uint8_t *plane = src + ch * nb_samples;
             for (int i = 0; i < nb_samples; i++)
-                dst[i * channels + ch] = ff_reverse[plane[i]];
+                dst[i * channels + ch] = ff_reverse(plane[i]);
         }
         break;
     default:
