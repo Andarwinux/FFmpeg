@@ -70,7 +70,7 @@ static av_always_inline int get_delta(const RW2DecContext *s,
     int d = 0;
     if (extra > 0) {
         unsigned v = get_bits(bc, extra);
-        unsigned m = (ff_reverse[v & 0xFF] << 8 | ff_reverse[v >> 8]) >> (16 - extra);
+        unsigned m = (ff_reverse(v & 0xFF) << 8 | ff_reverse(v >> 8)) >> (16 - extra);
         d = (m << shift) & 0xFFFF;
         if (!(v & 1))
             d += !shift - (1 << k);

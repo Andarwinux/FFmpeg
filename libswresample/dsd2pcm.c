@@ -110,7 +110,7 @@ void swri_dsd2pcm_translate(DSDContext *s, size_t samples,
         src += src_stride;
 
         p = buf + ((pos - DSD_CTABLES) & DSD_FIFOMASK);
-        *p = ff_reverse[*p];
+        *p = ff_reverse(*p);
 
         sum = 0.0;
         for (i = 0; i < DSD_CTABLES; i++) {
