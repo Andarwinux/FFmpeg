@@ -37,6 +37,10 @@ uint32_t ff_crc_clmul(const AVCRC *ctx, uint32_t crc,
                       const uint8_t *buffer, size_t length);
 uint32_t ff_crc_le_clmul(const AVCRC *ctx, uint32_t crc,
                          const uint8_t *buffer, size_t length);
+uint32_t ff_crc_avx512icl(const AVCRC *ctx, uint32_t crc,
+                      const uint8_t *buffer, size_t length);
+uint32_t ff_crc_le_avx512icl(const AVCRC *ctx, uint32_t crc,
+                         const uint8_t *buffer, size_t length);
 FF_VISIBILITY_POP_HIDDEN
 
 enum {
@@ -45,13 +49,14 @@ enum {
     CLMUL_LE,
 };
 
-static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
+static const AVCRC crc_table_clmul[AV_CRC_MAX][21] = {
     [AV_CRC_8_ATM] = {
         CLMUL_BE,
         0x32000000, 0x0, 0xbc000000, 0x0,
         0xc4000000, 0x0, 0x94000000, 0x0,
         0x62000000, 0x0, 0x79000000, 0x0,
         0x07156a16, 0x1, 0x07000000, 0x1,
+        0xdf000000, 0x0, 0xd9000000, 0x0,
     },
     [AV_CRC_8_EBU] = {
         CLMUL_BE,
@@ -59,6 +64,7 @@ static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
         0xfc000000, 0x0, 0x0d000000, 0x0,
         0x6a000000, 0x0, 0x65000000, 0x0,
         0x1c4b8192, 0x1, 0x1d000000, 0x1,
+        0x46000000, 0x0, 0x16000000, 0x0,
     },
     [AV_CRC_16_ANSI] = {
         CLMUL_BE,
@@ -66,6 +72,7 @@ static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
         0xf9130000, 0x0, 0xff830000, 0x0,
         0x807b0000, 0x0, 0x86630000, 0x0,
         0xfffbffe7, 0x1, 0x80050000, 0x1,
+        0xfe630000, 0x0, 0x7f870000, 0x0,
     },
     [AV_CRC_16_CCITT] = {
         CLMUL_BE,
@@ -73,6 +80,7 @@ static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
         0xd5f60000, 0x0, 0x45630000, 0x0,
         0xaa510000, 0x0, 0xeb230000, 0x0,
         0x11303471, 0x1, 0x10210000, 0x1,
+        0xcacd0000, 0x0, 0x16270000, 0x0,
     },
     [AV_CRC_24_IEEE] = {
         CLMUL_BE,
@@ -80,6 +88,7 @@ static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
         0x2c8c9d00, 0x0, 0x64e4d700, 0x0,
         0xd9fe8c00, 0x0, 0xfd7e0c00, 0x0,
         0xf845fe24, 0x1, 0x864cfb00, 0x1,
+        0x09e45400, 0x0, 0xa79dfd00, 0x0,
     },
     [AV_CRC_32_IEEE] = {
         CLMUL_BE,
@@ -87,6 +96,7 @@ static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
         0xc5b9cd4c, 0x0, 0xe8a45605, 0x0,
         0x490d678d, 0x0, 0xf200aa66, 0x0,
         0x04d101df, 0x1, 0x04c11db7, 0x1,
+        0xcbcf3bcb, 0x0, 0x88fe2237, 0x0,
     },
     [AV_CRC_32_IEEE_LE] = {
         CLMUL_LE,
@@ -94,6 +104,7 @@ static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
         0xccaa009e, 0x0, 0x751997d0, 0x1,
         0xccaa009e, 0x0, 0x63cd6124, 0x1,
         0xf7011640, 0x1, 0xdb710641, 0x1,
+        0x322d1430, 0x1, 0x1542778a, 0x1,
     },
     [AV_CRC_16_ANSI_LE] = {
         CLMUL_LE,
@@ -101,6 +112,7 @@ static const AVCRC crc_table_clmul[AV_CRC_MAX][17] = {
         0x00018cc2, 0x0, 0x1d0c2, 0x0,
         0x00018cc2, 0x0, 0x1bc02, 0x0,
         0xcfffbffe, 0x1, 0x14003, 0x0,
+        0x0001d99e, 0x0, 0x1bcc2, 0x0,
     },
 };
 
@@ -160,6 +172,8 @@ static inline void crc_init_x86(AVCRC *ctx, int le, int bits, uint32_t poly, int
         AV_WN64(dst + 40, xnmodp(64, poly_, 32, &div, le));
         AV_WN64(dst + 48, div);
         AV_WN64(dst + 56, reverse(poly_ | (1ULL << 32), 32));
+        AV_WN64(dst + 64, xnmodp(4 * 512 - 32, poly_, 32, &div, le));
+        AV_WN64(dst + 72, xnmodp(4 * 512 + 32, poly_, 32, &div, le));
     } else {
         ctx[0] = CLMUL_BE;
         AV_WN64(dst,      xnmodp(4 * 128 + 64, poly_, 32, &div, le));
@@ -170,6 +184,8 @@ static inline void crc_init_x86(AVCRC *ctx, int le, int bits, uint32_t poly, int
         AV_WN64(dst + 48, div);
         AV_WN64(dst + 40, xnmodp(96, poly_, 32, &div, le));
         AV_WN64(dst + 56, poly_ | (1ULL << 32));
+        AV_WN64(dst + 64, xnmodp(4 * 512 + 64, poly_, 32, &div, le));
+        AV_WN64(dst + 72, xnmodp(4 * 512, poly_, 32, &div, le));
     }
 }
 #endif
@@ -179,7 +195,7 @@ static inline const AVCRC *ff_crc_get_table_x86(AVCRCId crc_id)
 #if HAVE_CLMUL_EXTERNAL
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_CLMUL(cpu_flags)) {
+    if (EXTERNAL_CLMUL(cpu_flags)|EXTERNAL_AVX512ICL(cpu_flags)) {
         return crc_table_clmul[crc_id];
     }
 #endif
@@ -191,7 +207,7 @@ static inline av_cold int ff_crc_init_x86(AVCRC *ctx, int le, int bits, uint32_t
 #if HAVE_CLMUL_EXTERNAL
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_CLMUL(cpu_flags)) {
+    if (EXTERNAL_CLMUL(cpu_flags)|EXTERNAL_AVX512ICL(cpu_flags)) {
         crc_init_x86(ctx, le, bits, poly, ctx_size);
         return 1;
     }
@@ -204,8 +220,8 @@ static inline uint32_t ff_crc_x86(const AVCRC *ctx, uint32_t crc,
 {
     switch (ctx[0]) {
 #if HAVE_CLMUL_EXTERNAL
-    case CLMUL_BE: return ff_crc_clmul(ctx, crc, buffer, length);
-    case CLMUL_LE: return ff_crc_le_clmul(ctx, crc, buffer, length);
+    case CLMUL_BE: return EXTERNAL_AVX512ICL(av_get_cpu_flags()) ? ff_crc_avx512icl(ctx, crc, buffer, length) : ff_crc_clmul(ctx, crc, buffer, length);
+    case CLMUL_LE: return EXTERNAL_AVX512ICL(av_get_cpu_flags()) ? ff_crc_le_avx512icl(ctx, crc, buffer, length) : ff_crc_le_clmul(ctx, crc, buffer, length);
 #endif
     default: av_unreachable("x86 CRC only uses CLMUL_BE and CLMUL_LE");
     }
