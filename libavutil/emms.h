@@ -26,7 +26,7 @@
 #include "libavutil/attributes.h"
 #include "libavutil/log.h"
 
-#if ARCH_X86
+#if ARCH_X86 && 0
 
 #if HAVE_MMX_INLINE
 #ifndef __MMX__
