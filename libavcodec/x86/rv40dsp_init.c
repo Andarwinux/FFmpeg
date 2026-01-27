@@ -188,10 +188,12 @@ av_cold void ff_rv40dsp_init_x86(RV34DSPContext *c)
         QPEL_MC_SET(avg_, _sse2)
     }
     if (EXTERNAL_SSSE3(cpu_flags)) {
+        /*
         CHROMA_MC_FUNC(put, 8, ssse3);
         CHROMA_MC_FUNC(put, 4, ssse3);
         CHROMA_MC_FUNC(avg, 8, ssse3);
         CHROMA_MC_FUNC(avg, 4, ssse3);
+        */
         c->put_pixels_tab[0][15]        = put_rv40_qpel16_mc33_ssse3;
         c->put_pixels_tab[1][15]        = put_rv40_qpel8_mc33_ssse3;
         c->avg_pixels_tab[0][15]        = avg_rv40_qpel16_mc33_ssse3;
