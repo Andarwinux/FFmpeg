@@ -191,11 +191,13 @@ av_cold void INIT_FUNC(VP9DSPContext *dsp, int bitexact)
         init_lpf_funcs(BPC, sse2);
         init_ipred_funcs(tm, TM_VP8, BPC, sse2);
 #if BPC == 10
+        /*
         if (!bitexact) {
             init_itx_func(TX_4X4, ADST_DCT,  idct,  iadst, 4, 10, sse2);
             init_itx_func(TX_4X4, DCT_ADST,  iadst, idct,  4, 10, sse2);
             init_itx_func(TX_4X4, ADST_ADST, iadst, iadst, 4, 10, sse2);
         }
+        */
 #else
         init_itx_funcs(TX_4X4, 4, 12, sse2);
 #endif
@@ -207,9 +209,11 @@ av_cold void INIT_FUNC(VP9DSPContext *dsp, int bitexact)
     if (EXTERNAL_SSSE3(cpu_flags)) {
         init_lpf_funcs(BPC, ssse3);
 #if BPC == 10
+        /*
         if (!bitexact) {
             init_itx_funcs(TX_4X4, 4, BPC, ssse3);
         }
+        */
 #endif
     }
 
