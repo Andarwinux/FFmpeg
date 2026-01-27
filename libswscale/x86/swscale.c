@@ -198,16 +198,18 @@ static void yuv2yuvX_ ##opt(const int16_t *filter, int filterSize, \
     int remainder = (dstW % step); \
     int pixelsProcessed = dstW - remainder; \
     if(((uintptr_t)dest) & 15){ \
-        yuv2yuvX_mmxext(filter, filterSize, src, dest, dstW, dither, offset); \
+        yuv2planeX_tail(filter, filterSize, src, dest, dstW, dither, offset); \
         return; \
     } \
     if(pixelsProcessed > 0) \
         ff_yuv2yuvX_ ##opt(filter, filterSize - 1, 0, dest - offset, pixelsProcessed + offset, dither, offset); \
     if(remainder > 0){ \
-      ff_yuv2yuvX_mmxext(filter, filterSize - 1, pixelsProcessed, dest - offset, pixelsProcessed + remainder + offset, dither, offset); \
+      yuv2planeX_tail(filter, filterSize, src, dest + pixelsProcessed, remainder, dither, offset); \
     } \
     return; \
 }
+
+static yuv2planarX_fn yuv2planeX_tail;
 
 #if HAVE_MMXEXT_EXTERNAL
 YUV2YUVX_FUNC_MMX(mmxext, 16)
@@ -491,6 +493,7 @@ av_cold void ff_sws_init_swscale_x86(SwsInternal *c)
 {
     int cpu_flags = av_get_cpu_flags();
 
+    yuv2planeX_tail = c->yuv2planeX;
 #if HAVE_MMXEXT_INLINE
     if (INLINE_MMXEXT(cpu_flags))
         sws_init_swscale_mmxext(c);

@@ -132,10 +132,10 @@ av_cold void ff_vc1dsp_init_x86(VC1DSPContext *dsp)
         dsp->avg_vc1_mspel_pixels_tab[0][0]      = avg_vc1_mspel_mc00_16_sse2;
     }
     if (EXTERNAL_SSSE3(cpu_flags)) {
-        ASSIGN_LF4(ssse3);
+        //ASSIGN_LF4(ssse3);
         ASSIGN_LF816(ssse3);
-        dsp->put_no_rnd_vc1_chroma_pixels_tab[0] = ff_put_vc1_chroma_mc8_nornd_ssse3;
-        dsp->avg_no_rnd_vc1_chroma_pixels_tab[0] = ff_avg_vc1_chroma_mc8_nornd_ssse3;
+        //dsp->put_no_rnd_vc1_chroma_pixels_tab[0] = ff_put_vc1_chroma_mc8_nornd_ssse3;
+        //dsp->avg_no_rnd_vc1_chroma_pixels_tab[0] = ff_avg_vc1_chroma_mc8_nornd_ssse3;
     }
     if (EXTERNAL_SSE4(cpu_flags)) {
         dsp->vc1_h_loop_filter8  = ff_vc1_h_loop_filter8_sse4;
