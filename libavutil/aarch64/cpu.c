@@ -170,6 +170,9 @@ int ff_get_cpu_flags_aarch64(void)
     int flags = AV_CPU_FLAG_ARMV8 * HAVE_ARMV8 |
                 AV_CPU_FLAG_NEON  * HAVE_NEON;
 
+#ifdef __ARM_FEATURE_CRC32
+    flags |= AV_CPU_FLAG_ARM_CRC;
+#endif
 #ifdef __ARM_FEATURE_DOTPROD
     flags |= AV_CPU_FLAG_DOTPROD;
 #endif
