@@ -50,8 +50,6 @@ TESTPROGS = colorspace                                                  \
             floatimg_cmp                                                \
             pixdesc_query                                               \
             swscale                                                     \
-            sws_ops                                                     \
-            sws_ops_aarch64                                             \
 
 sws_ops_entries_aarch64: TAG = GEN
 sws_ops_entries_aarch64: $(SUBDIR)tests/sws_ops_aarch64$(EXESUF)
