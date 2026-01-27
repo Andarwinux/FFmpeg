@@ -291,12 +291,12 @@ av_cold void ff_qpeldsp_init_x86(QpelDSPContext *c)
         c->avg_qpel_pixels_tab[1][0] = ff_avg_pixels8x8_sse2;
 
         SET_V_QPEL_FUNCS (16, sse2,);
-        SET_V_QPEL_FUNCS (8,  sse2,);
+        //SET_V_QPEL_FUNCS (8,  sse2,);
     }
 #endif
     if (EXTERNAL_SSSE3(cpu_flags)) {
-        SET_H_QPEL_FUNCS(8, ssse3,);
-        SET_HV_QPEL_FUNCS(8, ssse3,);
+        //SET_H_QPEL_FUNCS(8, ssse3,);
+        //SET_HV_QPEL_FUNCS(8, ssse3,);
         SET_H_QPEL_FUNCS(16, ssse3,);
         SET_HV_QPEL_FUNCS(16, ssse3,);
     }
