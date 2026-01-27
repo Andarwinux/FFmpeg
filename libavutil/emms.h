@@ -22,7 +22,7 @@
 #include "config.h"
 #include "libavutil/attributes.h"
 
-#if ARCH_X86
+#if ARCH_X86 && 0
 
 void avpriv_emms_asm(void);
 
