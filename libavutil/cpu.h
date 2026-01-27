@@ -115,7 +115,17 @@
  * before. So av_get_cpu_flags() can easily be used in an application to
  * detect the enabled cpu flags.
  */
+#if defined(__AVX512VBMI2__) || defined(__ARM_FEATURE_SVE2)
+static inline int av_get_cpu_flags(void){
+    #if defined(__AVX512VBMI2__)
+        return AV_CPU_FLAG_AVX512ICL|AV_CPU_FLAG_AVX512|AV_CPU_FLAG_BMI2|AV_CPU_FLAG_BMI1|AV_CPU_FLAG_FMA3|AV_CPU_FLAG_AVX2|AV_CPU_FLAG_CMOV|AV_CPU_FLAG_AVX|AV_CPU_FLAG_CLMUL|AV_CPU_FLAG_AESNI|AV_CPU_FLAG_SSE42|AV_CPU_FLAG_SSE4|AV_CPU_FLAG_SSSE3|AV_CPU_FLAG_SSE3|AV_CPU_FLAG_SSE2|AV_CPU_FLAG_MMX;
+    #else
+        return AV_CPU_FLAG_SVE2|AV_CPU_FLAG_SVE|AV_CPU_FLAG_I8MM|AV_CPU_FLAG_DOTPROD|AV_CPU_FLAG_ARM_CRC|AV_CPU_FLAG_ARMV8;
+    #endif
+}
+#else
 int av_get_cpu_flags(void);
+#endif
 
 /**
  * Disables cpu detection and forces the specified flags.
