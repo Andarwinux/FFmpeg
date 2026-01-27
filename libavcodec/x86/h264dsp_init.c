@@ -207,9 +207,9 @@ av_cold void ff_h264dsp_init_x86(H264DSPContext *c, const int bit_depth,
             c->biweight_pixels_tab[2] = ff_h264_biweight_4_sse2;
 
             c->v_loop_filter_luma       = ff_deblock_v_luma_8_sse2;
-            c->h_loop_filter_luma       = ff_deblock_h_luma_8_sse2;
+            //c->h_loop_filter_luma       = ff_deblock_h_luma_8_sse2;
             c->v_loop_filter_luma_intra = ff_deblock_v_luma_intra_8_sse2;
-            c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_8_sse2;
+            //c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_8_sse2;
 
 #if ARCH_X86_64
             c->h_loop_filter_luma_mbaff = ff_deblock_h_luma_mbaff_8_sse2;
@@ -235,9 +235,9 @@ av_cold void ff_h264dsp_init_x86(H264DSPContext *c, const int bit_depth,
         }
         if (EXTERNAL_AVX(cpu_flags)) {
             c->v_loop_filter_luma       = ff_deblock_v_luma_8_avx;
-            c->h_loop_filter_luma       = ff_deblock_h_luma_8_avx;
+            //c->h_loop_filter_luma       = ff_deblock_h_luma_8_avx;
             c->v_loop_filter_luma_intra = ff_deblock_v_luma_intra_8_avx;
-            c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_8_avx;
+            //c->h_loop_filter_luma_intra = ff_deblock_h_luma_intra_8_avx;
 #if ARCH_X86_64
             c->h_loop_filter_luma_mbaff = ff_deblock_h_luma_mbaff_8_avx;
 #endif
