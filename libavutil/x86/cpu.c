@@ -89,7 +89,7 @@ static int cpuid_test(void)
 /* Function to test if multimedia instructions are supported...  */
 int ff_get_cpu_flags_x86(void)
 {
-    int rval = 0;
+    int rval = AV_CPU_FLAG_SLOW_GATHER;
 
 #ifdef cpuid
 
@@ -253,6 +253,49 @@ int ff_get_cpu_flags_x86(void)
     }
 
 #endif /* cpuid */
+
+    #ifdef __SSE2__
+        rval |= AV_CPU_FLAG_SSE2;
+    #endif
+    #ifdef __SSE3__
+        rval |= AV_CPU_FLAG_SSE3;
+    #endif
+    #ifdef __SSSE3__
+        rval |= AV_CPU_FLAG_SSSE3;
+    #endif
+    #ifdef __SSE4_1__
+        rval |= AV_CPU_FLAG_SSE4;
+    #endif
+    #ifdef __SSE4_2__
+        rval |= AV_CPU_FLAG_SSE42;
+    #endif
+    #ifdef __PCLMUL__
+        rval |= AV_CPU_FLAG_CLMUL;
+    #endif
+    #ifdef __AES__
+        rval |= AV_CPU_FLAG_AESNI;
+    #endif
+    #ifdef __AVX__
+        rval |= AV_CPU_FLAG_AVX;
+    #endif
+    #ifdef __FMA__
+        rval |= AV_CPU_FLAG_FMA3;
+    #endif
+    #ifdef __AVX2__
+        rval |= AV_CPU_FLAG_AVX2;
+    #endif
+    #ifdef __AVX512F__
+        rval |= AV_CPU_FLAG_AVX512;
+    #endif
+    #ifdef __AVX512VBMI2__
+        rval |= AV_CPU_FLAG_AVX512ICL;
+    #endif
+    #ifdef __BMI__
+        rval |= AV_CPU_FLAG_BMI1;
+    #endif
+    #ifdef __BMI2__
+        rval |= AV_CPU_FLAG_BMI2;
+    #endif
 
     return rval;
 }
