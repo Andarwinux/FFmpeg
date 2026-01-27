@@ -106,6 +106,7 @@ void av_force_cpu_flags(int arg){
     atomic_store_explicit(&cpu_flags, arg, memory_order_relaxed);
 }
 
+#if !defined(__AVX512VBMI2__) && !defined(__ARM_FEATURE_SVE2)
 int av_get_cpu_flags(void)
 {
     int flags = atomic_load_explicit(&cpu_flags, memory_order_relaxed);
@@ -115,6 +116,7 @@ int av_get_cpu_flags(void)
     }
     return flags;
 }
+#endif
 
 int av_parse_cpu_caps(unsigned *flags, const char *s)
 {
