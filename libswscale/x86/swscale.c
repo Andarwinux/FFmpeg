@@ -495,7 +495,7 @@ av_cold void ff_sws_init_swscale_x86(SwsInternal *c)
     if (INLINE_MMXEXT(cpu_flags))
         sws_init_swscale_mmxext(c);
 #endif
-    if(c->use_mmx_vfilter && !(c->opts.flags & SWS_ACCURATE_RND)) {
+    if(0) {
 #if HAVE_MMXEXT_EXTERNAL
         if (EXTERNAL_MMXEXT(cpu_flags))
             c->yuv2planeX = yuv2yuvX_mmxext;
