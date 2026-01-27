@@ -159,7 +159,7 @@ static void ff_put_vp8_bilinear ## SIZE ## _hv_ ## OPT( \
 
 HVBILIN(sse2,  8,  8, 16)
 HVBILIN(sse2,  8, 16, 16)
-HVBILIN(ssse3, 8,  4,  8)
+//HVBILIN(ssse3, 8,  4,  8)
 HVBILIN(ssse3, 8,  8, 16)
 HVBILIN(ssse3, 8, 16, 16)
 
@@ -264,7 +264,7 @@ av_cold void ff_vp78dsp_init_x86(VP8DSPContext *c)
         VP8_MC_FUNC(2, 4, ssse3);
         VP8_BILINEAR_MC_FUNC(0, 16, ssse3);
         VP8_BILINEAR_MC_FUNC(1, 8, ssse3);
-        VP8_BILINEAR_MC_FUNC(2, 4, ssse3);
+        //VP8_BILINEAR_MC_FUNC(2, 4, ssse3);
     }
 }
 
