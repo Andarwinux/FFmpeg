@@ -179,7 +179,7 @@ static inline const AVCRC *ff_crc_get_table_x86(AVCRCId crc_id)
 #if HAVE_CLMUL_EXTERNAL
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_CLMUL(cpu_flags)) {
+    if (1) {
         return crc_table_clmul[crc_id];
     }
 #endif
@@ -191,7 +191,7 @@ static inline av_cold int ff_crc_init_x86(AVCRC *ctx, int le, int bits, uint32_t
 #if HAVE_CLMUL_EXTERNAL
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_CLMUL(cpu_flags)) {
+    if (1) {
         crc_init_x86(ctx, le, bits, poly, ctx_size);
         return 1;
     }
