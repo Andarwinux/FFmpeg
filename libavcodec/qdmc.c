@@ -497,6 +497,7 @@ static void lin_calc(QDMCContext *s, float amplitude, int node1, int node2, int 
     j = node1;
     noise_ptr = &s->noise_buffer[256 * index];
 
+    #pragma clang loop vectorize(disable)
     for (i = 0; i < length; i += 4, j+= 4, noise_ptr += 4) {
         s->noise2_buffer[j    ] += scale * noise_ptr[0];
         s->noise2_buffer[j + 1] += scale * noise_ptr[1];
