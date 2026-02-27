@@ -63,7 +63,7 @@
 #include "swscale_internal.h"
 #include "graph.h"
 
-#if CONFIG_VULKAN
+#if CONFIG_VULKAN && 0
 #include "vulkan/ops.h"
 #endif
 
@@ -2248,7 +2248,7 @@ void sws_freeContext(SwsContext *sws)
     if (!c)
         return;
 
-#if CONFIG_VULKAN
+#if CONFIG_VULKAN && 0
     ff_sws_vk_uninit(sws);
 #endif
 
