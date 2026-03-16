@@ -172,7 +172,7 @@ static inline uint32_t ff_crc_aarch64(const AVCRC *ctx, uint32_t crc,
     case PMULL_BE: return ff_crc_neon_pmull(ctx, crc, buffer, length);
     case PMULL_LE: return ff_crc_le_neon_pmull(ctx, crc, buffer, length);
 #endif
-#if HAVE_ARM_CRC
+#if HAVE_ARM_CRC && !defined(__ARM_FEATURE_SHA3)
     case (AV_CRC_32_IEEE_LE + 1): return ff_crc32_aarch64(ctx, crc, buffer, length);
 #endif
     default: av_unreachable("AARCH64 has PMULL_LE, PMULL_BE and AV_CRC_32_IEEE_LE arch-specific CRC code");
