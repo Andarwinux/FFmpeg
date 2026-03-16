@@ -86,7 +86,7 @@
 #endif
 
 #if AV_GCC_VERSION_AT_LEAST(3,1) || defined(__clang__)
-#    define av_noinline __attribute__((noinline))
+#    define av_noinline
 #elif defined(_MSC_VER)
 #    define av_noinline __declspec(noinline)
 #else
@@ -106,7 +106,7 @@
 #endif
 
 #if AV_GCC_VERSION_AT_LEAST(4,3) || defined(__clang__)
-#    define av_cold __attribute__((cold))
+#    define av_cold __attribute__((always_inline))
 #else
 #    define av_cold
 #endif
