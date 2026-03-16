@@ -812,7 +812,7 @@ dst ## _bi_w [idx1][idx2][idx3] = hevc_put_bi_w_  ## name ## _ ## D ## _##opt
         PEL_LINK(pointer, 8, my , mx , fname##48,  bitd, opt ); \
         PEL_LINK(pointer, 9, my , mx , fname##64,  bitd, opt )
 
-void ff_hevc_dsp_init_x86(HEVCDSPContext *c, const int bit_depth)
+av_cold void ff_hevc_dsp_init_x86(HEVCDSPContext *c, const int bit_depth)
 {
     int cpu_flags = av_get_cpu_flags();
 
