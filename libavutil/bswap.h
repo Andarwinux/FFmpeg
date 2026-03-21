@@ -34,11 +34,11 @@
 
 #include "config.h"
 
-#if ARCH_ARM
+#if ARCH_ARM && 0
 #   include "arm/bswap.h"
-#elif ARCH_RISCV
+#elif ARCH_RISCV && 0
 #   include "riscv/bswap.h"
-#elif ARCH_X86
+#elif ARCH_X86 && 0
 #   include "x86/bswap.h"
 #endif
 
@@ -53,22 +53,21 @@
 #ifndef av_bswap16
 static av_always_inline av_const uint16_t av_bswap16(uint16_t x)
 {
-    x= (x>>8) | (x<<8);
-    return x;
+    return __builtin_bswap16(x);
 }
 #endif
 
 #ifndef av_bswap32
 static av_always_inline av_const uint32_t av_bswap32(uint32_t x)
 {
-    return AV_BSWAP32C(x);
+    return __builtin_bswap32(x);
 }
 #endif
 
 #ifndef av_bswap64
-static inline uint64_t av_const av_bswap64(uint64_t x)
+static av_always_inline av_const uint64_t av_bswap64(uint64_t x)
 {
-    return (uint64_t)av_bswap32((uint32_t)x) << 32 | av_bswap32((uint32_t)(x >> 32));
+    return __builtin_bswap64(x);
 }
 #endif
 
