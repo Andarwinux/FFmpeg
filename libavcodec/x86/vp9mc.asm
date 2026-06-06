@@ -1171,7 +1171,7 @@ cglobal vp9_%1_8tap_regular_%2hv_8, 4, 8, 0, dst, ds, src, ss, h, mx, my
 %if WIN64
     movaps             xmm6, [rsp+8]
 %endif
-    vzeroupper
+    ;vzeroupper
     RET
 
     SPEL_V_INIT          %1, 16
@@ -1281,7 +1281,7 @@ cglobal vp9_%1_8tap_regular_%2hv_8, 4, 8, 0, dst, ds, src, ss, h, mx, my
     lea                dstq, [dstq+dsq*2]
     sub                  hd, 2
     jg .v_w32_loop
-    vzeroupper
+    ;vzeroupper
     RET
 
     SPEL_V_INIT          %1, 64
@@ -1373,7 +1373,7 @@ cglobal vp9_%1_8tap_regular_%2hv_8, 4, 8, 0, dst, ds, src, ss, h, mx, my
 %if WIN64
     movaps             xmm6, [rsp+8]
 %endif
-    vzeroupper
+    ;vzeroupper
     RET
 
     SPEL_HV_INIT         %1, 4
@@ -1504,7 +1504,7 @@ cglobal vp9_%1_8tap_regular_%2hv_8, 4, 8, 0, dst, ds, src, ss, h, mx, my
     lea                dstq, [dstq+dsq*4]
     sub                  hd, 4
     jg .hv_w8_loop
-    vzeroupper
+    ;vzeroupper
     RET
 
 cglobal vp9_%1_8tap_smooth_32hv_8, 4, 8, 0
@@ -1606,7 +1606,7 @@ INIT_ZMM avx512icl
     movzx                hd, r6b
     sub                 r6d, 1<<8
     jg .hv_w16_loop0
-    vzeroupper
+    ;vzeroupper
 %if WIN64
     pop                  r8
 %endif
