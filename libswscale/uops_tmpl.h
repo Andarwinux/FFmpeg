@@ -88,7 +88,7 @@ static_assert(alignof(SwsFilterPriv) <= alignof(SwsOpPriv),
 #if HAVE_UBSAN
 #  define SWS_LOOP
 #elif defined(__clang__)
-#  define SWS_LOOP AV_PRAGMA(clang loop vectorize(assume_safety))
+#  define SWS_LOOP //AV_PRAGMA(clang loop vectorize(assume_safety))
 #elif defined(__GNUC__)
 #  define SWS_LOOP AV_PRAGMA(GCC ivdep)
 #else
