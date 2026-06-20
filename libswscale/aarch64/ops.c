@@ -156,7 +156,7 @@ static int compile_uops_aarch64(SwsContext *ctx, const SwsUOpList *uops,
 {
     int ret;
 
-    const int cpu_flags = av_get_cpu_flags();
+    const int cpu_flags = av_get_cpu_flags_static();
     if (!(cpu_flags & AV_CPU_FLAG_NEON))
         return AVERROR(ENOTSUP);
 
