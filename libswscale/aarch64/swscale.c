@@ -313,7 +313,7 @@ void ff_chrRangeToJpeg16_neon(int16_t *dstU, int16_t *dstV, int width,
 
 av_cold void ff_sws_init_range_convert_aarch64(SwsInternal *c)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
 
     if (have_neon(cpu_flags)) {
         if (c->dstBpc <= 14) {
@@ -338,7 +338,7 @@ av_cold void ff_sws_init_range_convert_aarch64(SwsInternal *c)
 
 av_cold void ff_sws_init_xyzdsp_aarch64(SwsInternal *c)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
 
     if (have_neon(cpu_flags)) {
         if (!isBE(c->opts.src_format)) {
@@ -349,7 +349,7 @@ av_cold void ff_sws_init_xyzdsp_aarch64(SwsInternal *c)
 
 av_cold void ff_sws_init_swscale_aarch64(SwsInternal *c)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
     enum AVPixelFormat dstFormat = c->opts.dst_format;
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(dstFormat);
 

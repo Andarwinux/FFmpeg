@@ -2130,7 +2130,7 @@ DEINTERLEAVE_BYTES(avx)
 
 av_cold void rgb2rgb_init_x86(void)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
 
 #if HAVE_INLINE_ASM
     if (INLINE_MMXEXT(cpu_flags))
