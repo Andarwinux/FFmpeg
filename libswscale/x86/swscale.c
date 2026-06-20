@@ -468,7 +468,7 @@ RANGE_CONVERT_FUNCS_DECL(avx2, 16)
 
 av_cold void ff_sws_init_range_convert_x86(SwsInternal *c)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
     if (EXTERNAL_AVX2_FAST(cpu_flags)) {
         if (c->dstBpc <= 14) {
             RANGE_CONVERT_FUNCS(avx2, 8);
@@ -484,7 +484,7 @@ av_cold void ff_sws_init_range_convert_x86(SwsInternal *c)
 
 av_cold void ff_sws_init_swscale_x86(SwsInternal *c)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
     enum AVPixelFormat dst_format = c->opts.dst_format;
 
     c->use_mmx_vfilter = 0;

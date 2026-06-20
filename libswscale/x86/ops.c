@@ -168,7 +168,7 @@ static bool check_filter_h_4x4(const SwsImplParams *params)
     if ((ctx->flags & SWS_BITEXACT) && uop->type == SWS_PIXEL_F32)
         return false; /* different accumulation order due to 4x4 transpose */
 
-    const int cpu_flags = av_get_cpu_flags();
+    const int cpu_flags = av_get_cpu_flags_static();
     if (cpu_flags & AV_CPU_FLAG_SLOW_GATHER)
         return true; /* always prefer over gathers if gathers are slow */
 
@@ -496,7 +496,7 @@ SWS_FOR_STRUCT(U8, RW_SHUFFLE, DECL_ENTRY, _avx512icl,  NULL, NULL)
 
 static int get_mmsize(void)
 {
-    const int cpu_flags = av_get_cpu_flags();
+    const int cpu_flags = av_get_cpu_flags_static();
     if (EXTERNAL_AVX512(cpu_flags))
         return 64;
     else if (EXTERNAL_AVX2(cpu_flags))
@@ -678,7 +678,7 @@ fail:
 
 static int compile_x86(SwsContext *ctx, const SwsOpList *ops, SwsCompiledOp *out)
 {
-    const int cpu_flags = av_get_cpu_flags();
+    const int cpu_flags = av_get_cpu_flags_static();
     const int mmsize = get_mmsize();
     if (mmsize < 0)
         return mmsize;

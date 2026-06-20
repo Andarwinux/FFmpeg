@@ -100,7 +100,7 @@ int ff_shuffle_filter_coefficients(SwsInternal *c, int *filterPos,
 {
 #if ARCH_X86_64
     int i, j, k;
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
     if (!filter)
         return 0;
     if (EXTERNAL_AVX2_FAST(cpu_flags) && !(cpu_flags & AV_CPU_FLAG_SLOW_GATHER)) {
@@ -1155,7 +1155,7 @@ av_cold int ff_sws_init_single_context(SwsContext *sws, SwsFilter *srcFilter,
     enum AVPixelFormat tmpFmt;
     static const float float_mult = 1.0f / 255.0f;
 
-    cpu_flags = av_get_cpu_flags();
+    cpu_flags = av_get_cpu_flags_static();
     flags     = sws->flags;
     emms_c();
 
