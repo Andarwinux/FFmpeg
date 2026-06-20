@@ -85,7 +85,7 @@ void ff_yuyvtoyuv422_neon(uint8_t *ydst, uint8_t *udst, uint8_t *vdst,
                           int lumStride, int chromStride, int srcStride);
 av_cold void rgb2rgb_init_aarch64(void)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
 
     if (have_neon(cpu_flags)) {
         ff_rgb24toyv12  = rgb24toyv12;

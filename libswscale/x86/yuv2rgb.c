@@ -241,7 +241,7 @@ static inline int yuv420_gbrp_ssse3(SwsInternal *c, const uint8_t *const src[],
 av_cold SwsFunc ff_yuv2rgb_init_x86(SwsInternal *c)
 {
 #if HAVE_X86ASM
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
 
     if (EXTERNAL_SSSE3(cpu_flags)) {
         switch (c->opts.dst_format) {
