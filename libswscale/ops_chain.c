@@ -117,7 +117,7 @@ int ff_sws_uop_lookup(SwsContext *ctx, const SwsUOpTable *const tables[],
                       int num_tables, const SwsUOp *uop, const int block_size,
                       SwsOpChain *chain)
 {
-    const unsigned cpu_flags = av_get_cpu_flags();
+    const unsigned cpu_flags = av_get_cpu_flags_static();
     const SwsUOpEntry *match = NULL;
     int ret;
 
