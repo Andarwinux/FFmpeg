@@ -360,7 +360,7 @@ int ff_swscale(SwsInternal *c, const uint8_t *const src[], const int srcStride[]
         || srcStride2[0]&15 || srcStride2[1]&15 || srcStride2[2]&15 || srcStride2[3]&15
     ) {
         SwsInternal *const ctx = c->parent ? sws_internal(c->parent) : c;
-        int cpu_flags = av_get_cpu_flags();
+        int cpu_flags = av_get_cpu_flags_static();
         if (flags & SWS_PRINT_INFO && HAVE_MMXEXT && (cpu_flags & AV_CPU_FLAG_SSE2) &&
             !atomic_exchange_explicit(&ctx->stride_unaligned_warned,1, memory_order_relaxed)) {
             av_log(c, AV_LOG_WARNING, "Warning: data is not aligned! This can lead to a speed loss\n");
@@ -553,7 +553,7 @@ int ff_swscale(SwsInternal *c, const uint8_t *const src[], const int srcStride[]
     }
 
 #if HAVE_MMXEXT_INLINE
-    if (av_get_cpu_flags() & AV_CPU_FLAG_MMXEXT)
+    if (av_get_cpu_flags_static() & AV_CPU_FLAG_MMXEXT)
         __asm__ volatile ("sfence" ::: "memory");
 #endif
     emms_c();

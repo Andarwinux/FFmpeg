@@ -207,14 +207,14 @@ static void get_unscaled_swscale_neon(SwsInternal *c) {
 
 void ff_get_unscaled_swscale_aarch64(SwsInternal *c)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
     if (have_neon(cpu_flags))
         get_unscaled_swscale_neon(c);
 }
 
 av_cold SwsFunc ff_yuv2rgb_init_aarch64(SwsInternal *c)
 {
-    int cpu_flags = av_get_cpu_flags();
+    int cpu_flags = av_get_cpu_flags_static();
     if (!have_neon(cpu_flags) ||
         (c->opts.src_h & 1) || (c->opts.src_w & 15) ||
         (c->opts.flags & SWS_ACCURATE_RND))
